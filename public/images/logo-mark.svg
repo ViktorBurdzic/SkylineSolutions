@@ -1,0 +1,6 @@
+<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Skyline Solutions mark">
+  <rect width="40" height="40" rx="9" fill="#10141B"/>
+  <rect width="40" height="40" rx="9" stroke="#232A36" stroke-width="1"/>
+  <path d="M11 26.5L20 17.5H14.5L23.5 8.5" stroke="#5B9BFF" stroke-width="3.1" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M16.5 31.5L25.5 22.5H20L29 13.5" stroke="#22D3EE" stroke-width="3.1" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

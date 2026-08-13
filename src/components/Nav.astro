@@ -1,0 +1,99 @@
+---
+const links = [
+  { href: "/#services", label: "Services" },
+  { href: "/#automate", label: "What We Automate" },
+  { href: "/#process", label: "How It Works" },
+  { href: "/#why", label: "Why Skyline" },
+  { href: "/#about", label: "About" },
+];
+---
+
+<header class="sticky top-0 z-50 border-b border-line bg-ink-950/80 backdrop-blur-md">
+  <div class="container-xl flex h-16 items-center justify-between md:h-20">
+    <a href="/" class="flex items-center gap-3 shrink-0">
+      <img src="/images/logo-mark.svg" alt="" width="36" height="36" class="h-8 w-8 md:h-9 md:w-9" />
+      <span class="font-semibold tracking-tight text-white text-[15px] md:text-base">
+        Skyline <span class="text-text-dim font-normal">Solutions</span>
+      </span>
+    </a>
+
+    <nav class="hidden lg:flex items-center gap-8" aria-label="Primary">
+      {links.map((link) => (
+        <a
+          href={link.href}
+          class="text-sm text-text-dim hover:text-white transition-colors duration-200"
+        >
+          {link.label}
+        </a>
+      ))}
+    </nav>
+
+    <div class="hidden lg:block">
+      <a
+        href="/contact"
+        class="inline-flex items-center justify-center rounded-md bg-accent-500 px-4 py-2.5 text-sm font-medium text-white transition-all duration-200 hover:bg-accent-400 hover:-translate-y-0.5"
+      >
+        Discuss Your Project
+      </a>
+    </div>
+
+    <button
+      id="nav-toggle"
+      type="button"
+      class="lg:hidden inline-flex items-center justify-center rounded-md border border-line p-2 text-text-dim"
+      aria-expanded="false"
+      aria-controls="mobile-nav"
+      aria-label="Toggle navigation menu"
+    >
+      <svg id="icon-open" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+        <path d="M3 5h14M3 10h14M3 15h14"/>
+      </svg>
+      <svg id="icon-close" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" class="hidden">
+        <path d="M4 4l12 12M16 4L4 16"/>
+      </svg>
+    </button>
+  </div>
+
+  <nav id="mobile-nav" class="hidden lg:hidden border-t border-line bg-ink-950" aria-label="Mobile">
+    <div class="container-xl flex flex-col gap-1 py-4">
+      {links.map((link) => (
+        <a
+          href={link.href}
+          class="rounded-md px-2 py-2.5 text-sm text-text-dim hover:bg-ink-800 hover:text-white transition-colors duration-200"
+        >
+          {link.label}
+        </a>
+      ))}
+      <a
+        href="/contact"
+        class="mt-2 inline-flex items-center justify-center rounded-md bg-accent-500 px-4 py-2.5 text-sm font-medium text-white"
+      >
+        Discuss Your Project
+      </a>
+    </div>
+  </nav>
+</header>
+
+<script>
+  const toggle = document.getElementById("nav-toggle");
+  const menu = document.getElementById("mobile-nav");
+  const iconOpen = document.getElementById("icon-open");
+  const iconClose = document.getElementById("icon-close");
+
+  toggle?.addEventListener("click", () => {
+    const isOpen = menu?.classList.contains("hidden") === false;
+    menu?.classList.toggle("hidden");
+    iconOpen?.classList.toggle("hidden");
+    iconClose?.classList.toggle("hidden");
+    toggle.setAttribute("aria-expanded", String(!isOpen));
+  });
+
+  menu?.querySelectorAll("a").forEach((a) =>
+    a.addEventListener("click", () => {
+      menu.classList.add("hidden");
+      iconOpen?.classList.remove("hidden");
+      iconClose?.classList.add("hidden");
+      toggle?.setAttribute("aria-expanded", "false");
+    })
+  );
+</script>

@@ -1,0 +1,36 @@
+---
+import SectionHeading from "../SectionHeading.astro";
+import Button from "../Button.astro";
+import { automationExamples } from "../../data/automation";
+---
+
+<section id="automate" class="border-b border-line py-24 md:py-32 scroll-mt-20">
+  <div class="container-xl">
+    <SectionHeading
+      eyebrow="What Can We Automate?"
+      title="Examples of what AI can do inside your existing systems."
+      description="These are illustrations of the kind of automation we build — not a list of finished products. Each one gets shaped around how your team actually works."
+    />
+
+    <div class="mt-16 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {automationExamples.map((item, i) => (
+        <div
+          class="rounded-xl border border-line bg-ink-900/40 p-6 transition-colors duration-300 hover:border-accent-500/40"
+          data-reveal
+          style={`transition-delay: ${(i % 3) * 80}ms`}
+        >
+          <h3 class="text-base font-semibold text-white">{item.title}</h3>
+          <p class="mt-2.5 text-sm leading-relaxed text-text-dim">{item.description}</p>
+        </div>
+      ))}
+    </div>
+
+    <div class="mt-14 flex flex-col items-start gap-5 rounded-xl border border-line bg-ink-900/60 p-7 sm:flex-row sm:items-center sm:justify-between" data-reveal>
+      <p class="max-w-lg text-sm text-text-dim">
+        Have a specific process in mind? Tell us what your team currently does by hand — we'll tell you honestly
+        whether AI is a fit.
+      </p>
+      <Button href="/contact" variant="secondary" class="shrink-0">Discuss Your Project</Button>
+    </div>
+  </div>
+</section>

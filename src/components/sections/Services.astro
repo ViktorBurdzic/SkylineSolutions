@@ -1,0 +1,38 @@
+---
+import SectionHeading from "../SectionHeading.astro";
+import { services } from "../../data/services";
+---
+
+<section id="services" class="border-b border-line py-24 md:py-32 scroll-mt-20">
+  <div class="container-xl">
+    <SectionHeading
+      eyebrow="Services"
+      title="Three ways we make your software work harder."
+      description="Each service stands on its own — but the real value shows up when they work together: solid engineering, connected to AI that can act."
+    />
+
+    <div class="mt-16 grid gap-6 lg:grid-cols-3">
+      {services.map((service, i) => (
+        <div
+          class="group flex flex-col rounded-xl border border-line bg-ink-900/40 p-7 transition-colors duration-300 hover:border-line-strong"
+          data-reveal
+          style={`transition-delay: ${i * 80}ms`}
+        >
+          <span class="font-mono text-sm text-accent-400">{service.tag}</span>
+          <h3 class="mt-4 text-xl font-semibold text-white">{service.title}</h3>
+          <p class="mt-3 text-sm leading-relaxed text-text-dim">{service.description}</p>
+          <ul class="mt-6 space-y-2.5 border-t border-line pt-6">
+            {service.points.map((point) => (
+              <li class="flex items-start gap-2.5 text-sm text-text-dim">
+                <svg class="mt-1 h-3.5 w-3.5 shrink-0 text-accent-400" viewBox="0 0 16 16" fill="none">
+                  <path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>{point}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

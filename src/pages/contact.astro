@@ -1,0 +1,48 @@
+---
+import Layout from "../layouts/Layout.astro";
+import ContactForm from "../components/ContactForm";
+import { SITE } from "../config/site";
+---
+
+<Layout
+  title="Contact"
+  description="Tell Skyline Solutions what your team currently does manually — we'll explore whether AI or custom software can make it faster, simpler, or more reliable."
+  path="/contact"
+>
+  <section class="border-b border-line py-20 md:py-28">
+    <div class="container-xl">
+      <div class="grid gap-14 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
+        <div data-reveal>
+          <p class="eyebrow mb-6">Contact</p>
+          <h1 class="text-3xl md:text-4xl font-semibold text-white leading-tight">
+            Have a process you'd like to automate?
+          </h1>
+          <p class="mt-5 text-base leading-relaxed text-text-dim">
+            Tell us what your team currently does manually. We'll explore whether AI or custom software can
+            make it faster, simpler, or more reliable.
+          </p>
+
+          <div class="mt-10 space-y-6 border-t border-line pt-8">
+            <div>
+              <p class="text-sm font-medium text-white">Email</p>
+              <a href={`mailto:${SITE.email}`} class="text-sm text-accent-400 hover:text-accent-300">
+                {SITE.email}
+              </a>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-white">What happens next</p>
+              <p class="mt-1 text-sm text-text-dim">
+                We'll reply directly — usually within one or two business days — to ask a few clarifying
+                questions or schedule a short call.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-2xl border border-line bg-ink-900/40 p-6 md:p-9" data-reveal>
+          <ContactForm client:load />
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>

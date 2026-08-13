@@ -1,0 +1,22 @@
+---
+import Button from "../Button.astro";
+---
+
+<section class="py-24 md:py-32">
+  <div class="container-xl">
+    <div class="relative overflow-hidden rounded-2xl border border-line bg-ink-900/60 px-8 py-16 text-center noise-surface md:px-16">
+      <div class="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_50%_0%,rgba(59,130,246,0.14),transparent_60%)]"></div>
+      <p class="eyebrow mb-5" data-reveal>Get Started</p>
+      <h2 class="mx-auto max-w-2xl text-3xl font-semibold text-white leading-tight md:text-4xl" data-reveal>
+        Have a process you'd like to automate?
+      </h2>
+      <p class="mx-auto mt-5 max-w-xl text-base leading-relaxed text-text-dim" data-reveal>
+        Tell us what your team currently does manually. We'll explore whether AI or custom software can make
+        it faster, simpler, or more reliable.
+      </p>
+      <div class="mt-9" data-reveal>
+        <Button href="/contact" variant="primary">Discuss Your Project</Button>
+      </div>
+    </div>
+  </div>
+</section>

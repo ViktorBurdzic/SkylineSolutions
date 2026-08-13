@@ -1,0 +1,24 @@
+---
+import SectionHeading from "../SectionHeading.astro";
+import { processSteps } from "../../data/process";
+---
+
+<section id="process" class="border-b border-line py-24 md:py-32 scroll-mt-20">
+  <div class="container-xl">
+    <SectionHeading
+      eyebrow="How It Works"
+      title="A deliberate process, not a demo."
+      description="We don't start with AI. We start with your software and your workflow — then decide where AI actually earns its place."
+    />
+
+    <div class="mt-16 grid gap-px overflow-hidden rounded-xl border border-line bg-line md:grid-cols-4">
+      {processSteps.map((step, i) => (
+        <div class="bg-ink-950 p-7 md:p-8" data-reveal style={`transition-delay: ${i * 90}ms`}>
+          <span class="font-mono text-sm text-text-faint">{step.index}</span>
+          <h3 class="mt-4 text-lg font-semibold text-white">{step.title}</h3>
+          <p class="mt-2.5 text-sm leading-relaxed text-text-dim">{step.description}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

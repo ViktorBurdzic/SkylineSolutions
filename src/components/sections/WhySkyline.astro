@@ -1,0 +1,47 @@
+---
+import SystemDiagram from "../SystemDiagram.astro";
+
+const pillars = [
+  { label: "Software engineering", detail: "Production-grade code, not prototypes." },
+  { label: "Enterprise systems", detail: "CRM, ERP, and the databases behind them." },
+  { label: "Business process understanding", detail: "Knowing which workflow is worth automating." },
+  { label: "AI & integration", detail: "Connecting models to real, live systems safely." },
+];
+---
+
+<section id="why" class="border-b border-line py-24 md:py-32 scroll-mt-20">
+  <div class="container-xl">
+    <div class="grid gap-16 lg:grid-cols-2 lg:items-center lg:gap-14">
+      <div data-reveal>
+        <p class="eyebrow mb-6">Why Skyline</p>
+        <h2 class="text-3xl md:text-4xl font-semibold text-white leading-tight">
+          We understand the software behind the business.
+        </h2>
+        <p class="mt-6 text-lg leading-relaxed text-white/90">
+          AI is powerful. But connecting AI safely to real business systems requires engineering.
+        </p>
+        <p class="mt-4 text-base leading-relaxed text-text-dim">
+          Anyone can wire a chatbot to a document. Fewer people can connect an AI agent to a live CRM,
+          respect the permission model, handle the edge cases, and keep it running under real production load.
+          That's the difference between a demo and a system your team can depend on.
+        </p>
+
+        <dl class="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2">
+          {pillars.map((pillar) => (
+            <div class="border-l-2 border-line-strong pl-4">
+              <dt class="text-sm font-medium text-white">{pillar.label}</dt>
+              <dd class="mt-1 text-sm text-text-dim">{pillar.detail}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+
+      <div>
+        <p class="mb-4 text-sm text-text-dim" data-reveal>
+          You don't need to replace your CRM or ERP to benefit from AI — Skyline builds the layer that sits on top.
+        </p>
+        <SystemDiagram variant="full" />
+      </div>
+    </div>
+  </div>
+</section>
