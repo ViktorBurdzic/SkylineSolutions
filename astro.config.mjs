@@ -8,7 +8,8 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://www.skylinesolutions.dev',
+  site: 'https://viktorburdzic.github.io',
+  base: '/SkylineSolutions',
   integrations: [react(), sitemap()],
 
   vite: {

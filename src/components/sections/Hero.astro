@@ -1,6 +1,7 @@
 ---
 import Button from "../Button.astro";
 import SystemDiagram from "../SystemDiagram.astro";
+import { withBase } from "../../utils/url";
 ---
 
 <section class="relative overflow-hidden border-b border-line">
@@ -27,7 +28,7 @@ import SystemDiagram from "../SystemDiagram.astro";
         </p>
 
         <div class="mt-9 flex flex-col gap-3 sm:flex-row" data-reveal>
-          <Button href="/contact" variant="primary">Discuss Your Project</Button>
+          <Button href={withBase("/contact")} variant="primary">Discuss Your Project</Button>
           <Button href="#automate" variant="secondary">See What We Can Automate</Button>
         </div>
 

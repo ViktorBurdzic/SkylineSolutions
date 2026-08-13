@@ -1,17 +1,19 @@
 ---
+import { withBase } from "../utils/url";
+
 const links = [
-  { href: "/#services", label: "Services" },
-  { href: "/#automate", label: "What We Automate" },
-  { href: "/#process", label: "How It Works" },
-  { href: "/#why", label: "Why Skyline" },
-  { href: "/#about", label: "About" },
+  { href: withBase("/#services"), label: "Services" },
+  { href: withBase("/#automate"), label: "What We Automate" },
+  { href: withBase("/#process"), label: "How It Works" },
+  { href: withBase("/#why"), label: "Why Skyline" },
+  { href: withBase("/#about"), label: "About" },
 ];
 ---
 
 <header class="sticky top-0 z-50 border-b border-line bg-ink-950/80 backdrop-blur-md">
   <div class="container-xl flex h-16 items-center justify-between md:h-20">
-    <a href="/" class="flex items-center gap-3 shrink-0">
-      <img src="/images/logo-mark.svg" alt="" width="36" height="36" class="h-8 w-8 md:h-9 md:w-9" />
+    <a href={withBase("/")} class="flex items-center gap-3 shrink-0">
+      <img src={withBase("/images/logo-mark.svg")} alt="" width="36" height="36" class="h-8 w-8 md:h-9 md:w-9" />
       <span class="font-semibold tracking-tight text-white text-[15px] md:text-base">
         Skyline <span class="text-text-dim font-normal">Solutions</span>
       </span>
@@ -30,7 +32,7 @@ const links = [
 
     <div class="hidden lg:block">
       <a
-        href="/contact"
+        href={withBase("/contact")}
         class="inline-flex items-center justify-center rounded-md bg-accent-500 px-4 py-2.5 text-sm font-medium text-white transition-all duration-200 hover:bg-accent-400 hover:-translate-y-0.5"
       >
         Discuss Your Project
@@ -65,7 +67,7 @@ const links = [
         </a>
       ))}
       <a
-        href="/contact"
+        href={withBase("/contact")}
         class="mt-2 inline-flex items-center justify-center rounded-md bg-accent-500 px-4 py-2.5 text-sm font-medium text-white"
       >
         Discuss Your Project

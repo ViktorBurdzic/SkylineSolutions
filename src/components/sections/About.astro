@@ -1,4 +1,6 @@
 ---
+import { withBase } from "../../utils/url";
+
 // To use your real photo: add it as public/images/director.jpg, then change
 // the src below from "/images/director-placeholder.svg" to "/images/director.jpg".
 const focusAreas = [
@@ -17,7 +19,7 @@ const focusAreas = [
       <div data-reveal>
         <div class="overflow-hidden rounded-xl border border-line">
           <img
-            src="/images/director-placeholder.svg"
+            src={withBase("/images/director-placeholder.svg")}
             alt="Portrait of the Skyline Solutions director — replace with a professional photo"
             width="480"
             height="560"

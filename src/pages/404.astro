@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Button from "../components/Button.astro";
+import { withBase } from "../utils/url";
 ---
 
 <Layout title="Page Not Found" path="/404" noindex>
@@ -12,8 +13,8 @@ import Button from "../components/Button.astro";
         The page you're looking for may have moved. Head back to the homepage or get in touch.
       </p>
       <div class="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
-        <Button href="/" variant="primary">Back to Home</Button>
-        <Button href="/contact" variant="secondary">Contact Us</Button>
+        <Button href={withBase("/")} variant="primary">Back to Home</Button>
+        <Button href={withBase("/contact")} variant="secondary">Contact Us</Button>
       </div>
     </div>
   </section>

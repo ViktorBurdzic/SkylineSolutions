@@ -2,6 +2,7 @@
 import SectionHeading from "../SectionHeading.astro";
 import Button from "../Button.astro";
 import { automationExamples } from "../../data/automation";
+import { withBase } from "../../utils/url";
 ---
 
 <section id="automate" class="border-b border-line py-24 md:py-32 scroll-mt-20">
@@ -30,7 +31,7 @@ import { automationExamples } from "../../data/automation";
         Have a specific process in mind? Tell us what your team currently does by hand — we'll tell you honestly
         whether AI is a fit.
       </p>
-      <Button href="/contact" variant="secondary" class="shrink-0">Discuss Your Project</Button>
+      <Button href={withBase("/contact")} variant="secondary" class="shrink-0">Discuss Your Project</Button>
     </div>
   </div>
 </section>

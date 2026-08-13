@@ -1,5 +1,6 @@
 ---
 import Button from "../Button.astro";
+import { withBase } from "../../utils/url";
 ---
 
 <section class="py-24 md:py-32">
@@ -15,7 +16,7 @@ import Button from "../Button.astro";
         it faster, simpler, or more reliable.
       </p>
       <div class="mt-9" data-reveal>
-        <Button href="/contact" variant="primary">Discuss Your Project</Button>
+        <Button href={withBase("/contact")} variant="primary">Discuss Your Project</Button>
       </div>
     </div>
   </div>
