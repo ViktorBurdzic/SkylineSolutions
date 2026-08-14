@@ -13,5 +13,6 @@ export const SITE = {
 // Web3Forms decides the destination inbox from the access key itself, not from
 // anything sent with the request — so this key must be the one issued to
 // skylinesolutionsai@gmail.com. Get it free at https://web3forms.com.
-// Until it is filled in, every submission fails and the form shows an error.
-export const WEB3FORMS_ACCESS_KEY = "REPLACE_WITH_WEB3FORMS_ACCESS_KEY";
+// This key is public by design: it ships in the client bundle and only grants
+// the ability to send mail to the inbox it is registered to.
+export const WEB3FORMS_ACCESS_KEY = "0d8c8a37-2011-4c1d-b3e7-fb54b03ea3ec";
