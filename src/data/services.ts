@@ -12,8 +12,8 @@ export const services: Service[] = [
   },
   {
     tag: "02",
-    title: ".NET Engineering",
-    description: "Production-grade C#, SQL, and APIs — the foundation everything else runs on.",
+    title: "Software Engineering",
+    description: "Production-grade systems, APIs, and data models — in whatever stack fits.",
   },
   {
     tag: "03",

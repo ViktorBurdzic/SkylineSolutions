@@ -5,7 +5,7 @@ export const SITE = {
   name: "Skyline Solutions",
   url: "https://www.skylinesolutions.dev", // TODO: replace with your real domain (also update astro.config.mjs `site`)
   description:
-    "Skyline Solutions integrates AI agents, automation, and modern .NET engineering into the CRM, ERP, and business software companies already run on.",
+    "Skyline Solutions integrates AI agents, automation, and modern software engineering into the CRM, ERP, and business software companies already run on.",
   email: "hello@skylinesolutions.dev", // TODO: replace with your real contact address
   locale: "en",
 };
