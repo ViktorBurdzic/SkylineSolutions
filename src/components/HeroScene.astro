@@ -1,0 +1,616 @@
+---
+import Button from "./Button.astro";
+import { withBase } from "../utils/url";
+
+type Step = {
+  n: string;
+  title: string;
+  role: string;
+  items: string[];
+  tone: "base" | "core" | "result";
+};
+
+const steps: Step[] = [
+  {
+    n: "01",
+    title: "Existing Systems",
+    role: "Where your data lives today",
+    items: ["CRM", "ERP", "SQL", "APIs", "Documents", "Legacy Apps"],
+    tone: "base",
+  },
+  {
+    n: "02",
+    title: "Skyline AI Layer",
+    role: "The intelligence layer we build for you",
+    items: ["orchestration", "context", "guardrails"],
+    tone: "core",
+  },
+  {
+    n: "03",
+    title: "Automation & Decisions",
+    role: "It retrieves, decides, and completes the work",
+    items: ["AI Agents", "Automation", "Knowledge", "Decision Support", "Workflows"],
+    tone: "base",
+  },
+  {
+    n: "04",
+    title: "Business Results",
+    role: "Your team stops doing it by hand",
+    items: ["Faster", "Cheaper", "Fewer errors"],
+    tone: "result",
+  },
+];
+---
+
+<section class="flow" data-flow>
+  <div class="flow__sticky" data-sticky data-tone="base">
+    <!-- Aura layers crossfade so the backdrop shifts hue with the active step. -->
+    <div class="aura" data-aura="base" aria-hidden="true"></div>
+    <div class="aura" data-aura="core" aria-hidden="true"></div>
+    <div class="aura" data-aura="result" aria-hidden="true"></div>
+    <div class="drift-grid" aria-hidden="true"></div>
+
+    <header class="flow__head">
+      <p class="eyebrow">Software Engineering &amp; AI Automation</p>
+      <h1 class="flow__title">
+        Modernize your business software <span class="grad">with AI</span>.
+      </h1>
+    </header>
+
+    <!-- One card on screen at a time; they share a single grid cell. -->
+    <div class="cards" data-cards>
+      {steps.map((step, i) => (
+        <article
+          class="card"
+          data-step={i}
+          data-tone={step.tone}
+          data-state={i === 0 ? "active" : "future"}
+        >
+          <span class="card__glow" aria-hidden="true"></span>
+          <span class="card__halo" aria-hidden="true"></span>
+
+          <span class="card__n">{step.n}</span>
+          <h2 class="card__title">{step.title}</h2>
+          <p class="card__role">{step.role}</p>
+          <div class="card__chips">
+            {step.items.map((item, c) => (
+              <span class="chip" style={`--i:${c}`}>{item}</span>
+            ))}
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <div class="flow__foot">
+      <div class="segs" aria-hidden="true">
+        {steps.map((_, i) => (
+          <span class="seg" data-seg={i}><span class="seg__fill"></span></span>
+        ))}
+      </div>
+
+      <p class="counter">
+        <span data-counter>01</span> <span class="counter__of">/ {String(steps.length).padStart(2, "0")}</span>
+      </p>
+
+      <div class="flow__cta">
+        <Button href={withBase("/contact")} variant="primary">Discuss Your Project</Button>
+        <Button href="#services" variant="secondary">See What We Do</Button>
+      </div>
+    </div>
+
+    <div class="hint" data-hint aria-hidden="true">
+      <svg viewBox="0 0 16 24" width="13" height="19" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M8 4v13M3.5 12.5L8 17l4.5-4.5" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Registered so the conic-gradient border can be animated smoothly. */
+  @property --angle {
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false;
+  }
+
+  .flow {
+    position: relative;
+    height: 420vh;
+  }
+
+  .flow__sticky {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(1.5rem, 4vh, 2.75rem);
+    padding: 5rem 1.5rem 2rem;
+    border-bottom: 1px solid var(--color-line);
+  }
+
+  /* ---------- backdrop ---------- */
+
+  .aura {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.9s ease;
+  }
+
+  .aura[data-aura="base"] {
+    background:
+      radial-gradient(55rem 32rem at 50% 8%, rgba(59, 130, 246, 0.13), transparent 65%),
+      radial-gradient(40rem 26rem at 50% 98%, rgba(59, 130, 246, 0.06), transparent 70%);
+  }
+
+  .aura[data-aura="core"] {
+    background:
+      radial-gradient(58rem 34rem at 50% 8%, rgba(59, 130, 246, 0.26), transparent 65%),
+      radial-gradient(40rem 26rem at 50% 98%, rgba(91, 155, 255, 0.1), transparent 70%);
+  }
+
+  .aura[data-aura="result"] {
+    background:
+      radial-gradient(58rem 34rem at 50% 8%, rgba(34, 211, 238, 0.22), transparent 65%),
+      radial-gradient(40rem 26rem at 50% 98%, rgba(34, 211, 238, 0.1), transparent 70%);
+  }
+
+  .flow__sticky[data-tone="base"] .aura[data-aura="base"],
+  .flow__sticky[data-tone="core"] .aura[data-aura="core"],
+  .flow__sticky[data-tone="result"] .aura[data-aura="result"] {
+    opacity: 1;
+  }
+
+  .drift-grid {
+    position: absolute;
+    inset: -60px;
+    background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.05) 1px, transparent 0);
+    background-size: 34px 34px;
+    -webkit-mask-image: radial-gradient(circle at 50% 45%, #000, transparent 72%);
+    mask-image: radial-gradient(circle at 50% 45%, #000, transparent 72%);
+    animation: drift 26s linear infinite;
+  }
+
+  @keyframes drift {
+    to { transform: translate(34px, 34px); }
+  }
+
+  .flow__head,
+  .cards,
+  .flow__foot {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+  }
+
+  .flow__title {
+    margin-top: 0.8rem;
+    font-size: clamp(1.35rem, 3vw, 2.25rem);
+    line-height: 1.12;
+    letter-spacing: -0.03em;
+    color: #fff;
+  }
+
+  .grad {
+    background: linear-gradient(100deg, var(--color-accent-400), var(--color-cyan-400));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* ---------- card stack ---------- */
+
+  .cards {
+    display: grid;
+    grid-template-areas: "card";
+    place-items: center;
+    width: 100%;
+    max-width: 46rem;
+    perspective: 1400px;
+    /* Continuous parallax within a step, fed by the scroll loop. */
+    transform: translateY(calc((var(--drift, 0.5) - 0.5) * -20px));
+  }
+
+  .card {
+    grid-area: card;
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 1.5rem;
+    border: 1px solid rgba(59, 130, 246, 0.28);
+    background: linear-gradient(180deg, rgba(16, 20, 27, 0.95), rgba(9, 12, 17, 0.92));
+    padding: clamp(1.75rem, 5vh, 3.25rem) clamp(1.25rem, 4vw, 3rem);
+    transition:
+      opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+      filter 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Cards arc in from below and peel away upward. */
+  .card[data-state="future"] {
+    opacity: 0;
+    transform: translateY(60px) scale(0.94) rotateX(-10deg);
+    filter: blur(8px);
+    pointer-events: none;
+  }
+
+  .card[data-state="active"] {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotateX(0deg);
+    filter: blur(0);
+  }
+
+  .card[data-state="past"] {
+    opacity: 0;
+    transform: translateY(-60px) scale(0.94) rotateX(10deg);
+    filter: blur(8px);
+    pointer-events: none;
+  }
+
+  /* Rotating conic border, masked to a 1px ring. */
+  .card__glow {
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: conic-gradient(
+      from var(--angle),
+      transparent 50%,
+      var(--color-accent-500) 72%,
+      var(--color-cyan-400) 84%,
+      transparent 96%
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.7s ease;
+  }
+
+  .card[data-state="active"] .card__glow {
+    opacity: 1;
+    animation: spin 4.5s linear infinite;
+  }
+
+  @keyframes spin {
+    to { --angle: 360deg; }
+  }
+
+  /* Soft breathing aura behind the active card. */
+  .card__halo {
+    position: absolute;
+    inset: 8%;
+    z-index: -1;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.4), transparent 70%);
+    filter: blur(50px);
+    opacity: 0;
+    transition: opacity 0.7s ease;
+  }
+
+  .card[data-state="active"] .card__halo {
+    opacity: 1;
+    animation: breathe 5s ease-in-out infinite;
+  }
+
+  @keyframes breathe {
+    0%, 100% { transform: scale(1); opacity: 0.75; }
+    50% { transform: scale(1.18); opacity: 1; }
+  }
+
+  .card[data-tone="core"] {
+    border-color: rgba(59, 130, 246, 0.5);
+    background: linear-gradient(180deg, rgba(59, 130, 246, 0.16), rgba(9, 12, 17, 0.94));
+  }
+
+  .card[data-tone="result"] {
+    border-color: rgba(34, 211, 238, 0.45);
+    background: linear-gradient(180deg, rgba(34, 211, 238, 0.14), rgba(9, 12, 17, 0.94));
+  }
+
+  .card[data-tone="result"] .card__halo {
+    background: radial-gradient(circle, rgba(34, 211, 238, 0.4), transparent 70%);
+  }
+
+  /* ---------- card internals (staggered entrance) ---------- */
+
+  .card__n {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    letter-spacing: 0.28em;
+    color: var(--color-accent-400);
+  }
+
+  .card[data-tone="result"] .card__n {
+    color: var(--color-cyan-400);
+  }
+
+  .card__title {
+    margin-top: 1rem;
+    font-size: clamp(1.75rem, 5vw, 3rem);
+    font-weight: 600;
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+    color: #fff;
+    text-wrap: balance;
+  }
+
+  .card__role {
+    margin-top: 0.75rem;
+    max-width: 30rem;
+    font-size: clamp(0.95rem, 1.9vw, 1.1875rem);
+    line-height: 1.5;
+    color: var(--color-text-dim);
+    text-wrap: balance;
+  }
+
+  .card__chips {
+    margin-top: clamp(1.5rem, 3.5vh, 2.25rem);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  /* `backwards` (not `both`) so hover transforms still apply once settled. */
+  .card[data-state="active"] .card__n {
+    animation: riseIn 0.55s 0.06s backwards cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .card[data-state="active"] .card__title {
+    animation: riseIn 0.55s 0.13s backwards cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .card[data-state="active"] .card__role {
+    animation: riseIn 0.55s 0.2s backwards cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .card[data-state="active"] .chip {
+    animation: popIn 0.5s calc(0.28s + var(--i) * 0.06s) backwards cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes riseIn {
+    from { opacity: 0; transform: translateY(16px); }
+  }
+
+  @keyframes popIn {
+    from { opacity: 0; transform: translateY(14px) scale(0.8); }
+  }
+
+  .chip {
+    border-radius: 0.5rem;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    background: rgba(59, 130, 246, 0.1);
+    padding: 0.5rem 0.9rem;
+    font-family: var(--font-mono);
+    font-size: clamp(0.75rem, 1.4vw, 0.875rem);
+    color: var(--color-text);
+    white-space: nowrap;
+    cursor: default;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.25s ease,
+      background 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .chip:hover {
+    transform: translateY(-4px) scale(1.06);
+    border-color: rgba(91, 155, 255, 0.8);
+    background: rgba(59, 130, 246, 0.22);
+    box-shadow: 0 10px 24px -10px rgba(59, 130, 246, 0.9);
+  }
+
+  .card[data-tone="result"] .chip {
+    border-color: rgba(34, 211, 238, 0.35);
+    background: rgba(34, 211, 238, 0.12);
+  }
+
+  .card[data-tone="result"] .chip:hover {
+    border-color: rgba(34, 211, 238, 0.85);
+    background: rgba(34, 211, 238, 0.24);
+    box-shadow: 0 10px 24px -10px rgba(34, 211, 238, 0.9);
+  }
+
+  /* ---------- footer ---------- */
+
+  .flow__foot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 30rem;
+  }
+
+  .segs {
+    display: flex;
+    gap: 0.4rem;
+    width: min(22rem, 80%);
+  }
+
+  .seg {
+    position: relative;
+    flex: 1;
+    height: 3px;
+    border-radius: 999px;
+    background: var(--color-line-strong);
+    overflow: hidden;
+  }
+
+  .seg__fill {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(to right, var(--color-accent-500), var(--color-cyan-400));
+    transform: scaleX(var(--fill, 0));
+    transform-origin: left center;
+    transition: transform 0.15s linear;
+  }
+
+  .counter {
+    margin-top: 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    color: var(--color-accent-400);
+  }
+
+  .counter__of {
+    color: var(--color-text-faint);
+  }
+
+  .flow__cta {
+    margin-top: 1.75rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+
+  .hint {
+    position: absolute;
+    bottom: 1.25rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+    color: var(--color-text-faint);
+    animation: bob 2.2s ease-in-out infinite;
+    transition: opacity 0.4s ease;
+  }
+
+  @keyframes bob {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(6px); }
+  }
+
+  @media (max-width: 640px) {
+    .flow__sticky { padding-top: 4.5rem; }
+    .chip { padding: 0.4rem 0.7rem; }
+    .hint { display: none; }
+  }
+
+  /* ---------- reduced motion / no JS ---------- */
+
+  @media (prefers-reduced-motion: reduce) {
+    .flow { height: auto; }
+
+    .flow__sticky {
+      position: static;
+      height: auto;
+      padding-block: 6rem;
+    }
+
+    .cards {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      transform: none;
+    }
+
+    .card,
+    .card[data-state="future"],
+    .card[data-state="past"] {
+      opacity: 1;
+      transform: none;
+      filter: none;
+      pointer-events: auto;
+    }
+
+    .card__glow,
+    .card__halo,
+    .drift-grid,
+    .hint {
+      animation: none;
+    }
+
+    .card[data-state="active"] .card__n,
+    .card[data-state="active"] .card__title,
+    .card[data-state="active"] .card__role,
+    .card[data-state="active"] .chip {
+      animation: none;
+    }
+
+    .aura[data-aura="base"] { opacity: 1; }
+    .seg__fill { transform: scaleX(1); }
+  }
+</style>
+
+<script>
+  const flow = document.querySelector<HTMLElement>("[data-flow]");
+  const sticky = document.querySelector<HTMLElement>("[data-sticky]");
+  const cardsEl = document.querySelector<HTMLElement>("[data-cards]");
+  const cards = Array.from(document.querySelectorAll<HTMLElement>("[data-step]"));
+  const segs = Array.from(document.querySelectorAll<HTMLElement>("[data-seg] .seg__fill"));
+  const counter = document.querySelector<HTMLElement>("[data-counter]");
+  const hint = document.querySelector<HTMLElement>("[data-hint]");
+
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  if (flow && cards.length && !reduced.matches) {
+    const clamp = (v: number, min = 0, max = 1) => Math.min(max, Math.max(min, v));
+
+    let active = 0;
+    let ticking = false;
+
+    const render = () => {
+      ticking = false;
+
+      const runway = flow.offsetHeight - window.innerHeight;
+      const p = runway > 0 ? clamp(-flow.getBoundingClientRect().top / runway) : 0;
+
+      // Split the runway into one segment per card. `t` is the position along
+      // that sequence, e.g. 2.4 => card 3, 40% of the way through it.
+      const t = p * cards.length;
+      const index = Math.min(cards.length - 1, Math.floor(t));
+
+      if (index !== active) {
+        active = index;
+        cards.forEach((card, i) => {
+          card.dataset.state = i === index ? "active" : i < index ? "past" : "future";
+        });
+
+        // Backdrop follows the active step's accent.
+        if (sticky) sticky.dataset.tone = cards[index].dataset.tone ?? "base";
+
+        if (counter) {
+          counter.textContent = String(index + 1).padStart(2, "0");
+          counter.animate(
+            [
+              { transform: "translateY(7px)", opacity: 0 },
+              { transform: "none", opacity: 1 },
+            ],
+            { duration: 380, easing: "cubic-bezier(0.16, 1, 0.3, 1)" }
+          );
+        }
+      }
+
+      // Drift is the progress *within* the current step, driving the parallax.
+      cardsEl?.style.setProperty("--drift", String(t - Math.floor(t)));
+      segs.forEach((seg, i) => seg.style.setProperty("--fill", String(clamp(t - i))));
+      if (hint) hint.style.opacity = String(1 - clamp(p / 0.04));
+    };
+
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(render);
+    };
+
+    render();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+  } else {
+    // Reduced motion: every step stays visible, no scroll choreography.
+    cards.forEach((card) => (card.dataset.state = "active"));
+  }
+</script>

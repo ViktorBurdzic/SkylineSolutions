@@ -2,16 +2,19 @@
 interface Props {
   eyebrow: string;
   title: string;
+  accent?: string;
   description?: string;
   align?: "left" | "center";
   class?: string;
 }
 
-const { eyebrow, title, description, align = "left", class: className = "" } = Astro.props;
+const { eyebrow, title, accent, description, align = "left", class: className = "" } = Astro.props;
 ---
 
-<div class:list={["max-w-2xl", align === "center" && "mx-auto text-center", className]} data-reveal>
-  <p class="eyebrow mb-4">{eyebrow}</p>
-  <h2 class="text-3xl md:text-4xl font-semibold text-white leading-tight">{title}</h2>
-  {description && <p class="mt-4 text-base md:text-lg text-text-dim leading-relaxed">{description}</p>}
+<div class:list={["max-w-3xl", align === "center" && "mx-auto text-center", className]} data-reveal>
+  <p class="eyebrow mb-5">{eyebrow}</p>
+  <h2 class="text-balance text-3xl font-semibold leading-[1.1] tracking-tight text-white md:text-5xl">
+    {title}{accent && <> <span class="text-gradient">{accent}</span></>}
+  </h2>
+  {description && <p class="mt-5 max-w-xl text-base leading-relaxed text-text-dim md:text-lg">{description}</p>}
 </div>

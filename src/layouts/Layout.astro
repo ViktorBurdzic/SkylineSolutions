@@ -95,6 +95,16 @@ const structuredData = {
       );
 
       document.querySelectorAll("[data-reveal]").forEach((el) => observer.observe(el));
+
+      // Feeds the cursor position to `.spotlight::before` so the highlight
+      // follows the pointer across each card.
+      document.querySelectorAll<HTMLElement>("[data-spotlight]").forEach((card) => {
+        card.addEventListener("pointermove", (event) => {
+          const rect = card.getBoundingClientRect();
+          card.style.setProperty("--mx", `${event.clientX - rect.left}px`);
+          card.style.setProperty("--my", `${event.clientY - rect.top}px`);
+        });
+      });
     </script>
   </body>
 </html>

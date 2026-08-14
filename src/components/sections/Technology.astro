@@ -1,25 +1,19 @@
 ---
 import SectionHeading from "../SectionHeading.astro";
+import Marquee from "../Marquee.astro";
 import { techGroups } from "../../data/tech";
+
+const rowA = techGroups[0].items;
+const rowB = [...techGroups[1].items, ...techGroups[2].items];
 ---
 
-<section id="technology" class="border-b border-line py-24 md:py-32 scroll-mt-20">
+<section id="technology" class="border-b border-line py-28 md:py-40 scroll-mt-20">
   <div class="container-xl">
-    <SectionHeading eyebrow="Technology" title="The stack behind the work." />
+    <SectionHeading eyebrow="Technology" title="The stack" accent="behind the work." align="center" />
+  </div>
 
-    <div class="mt-16 grid gap-10 md:grid-cols-3">
-      {techGroups.map((group, i) => (
-        <div data-reveal style={`transition-delay: ${i * 90}ms`}>
-          <p class="text-sm font-medium text-white">{group.label}</p>
-          <div class="mt-4 flex flex-wrap gap-2">
-            {group.items.map((item) => (
-              <span class="rounded-md border border-line bg-ink-900/60 px-3 py-1.5 text-sm text-text-dim font-mono">
-                {item}
-              </span>
-            ))}
-          </div>
-        </div>
-      ))}
-    </div>
+  <div class="mt-20 space-y-4">
+    <Marquee items={rowA} duration={26} />
+    <Marquee items={rowB} reverse duration={22} />
   </div>
 </section>

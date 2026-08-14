@@ -1,0 +1,66 @@
+---
+interface Props {
+  items: string[];
+  reverse?: boolean;
+  duration?: number;
+  class?: string;
+}
+
+const { items, reverse = false, duration = 28, class: className = "" } = Astro.props;
+const loop = [...items, ...items];
+---
+
+<div class={`marquee ${className}`} data-reveal>
+  <div
+    class="marquee-track"
+    style={`animation-duration: ${duration}s; animation-direction: ${reverse ? "reverse" : "normal"};`}
+  >
+    {loop.map((item) => (
+      <span class="marquee-item">{item}</span>
+    ))}
+  </div>
+</div>
+
+<style>
+  .marquee {
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  }
+
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    gap: 0.625rem;
+    animation-name: marquee;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+
+  .marquee-item {
+    flex: none;
+    border-radius: 0.5rem;
+    border: 1px solid var(--color-line);
+    background: rgba(255, 255, 255, 0.02);
+    padding: 0.55rem 1.1rem;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--color-text-dim);
+    white-space: nowrap;
+  }
+
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-track {
+      animation: none;
+    }
+  }
+</style>

@@ -3,20 +3,23 @@ import SectionHeading from "../SectionHeading.astro";
 import { processSteps } from "../../data/process";
 ---
 
-<section id="process" class="border-b border-line py-24 md:py-32 scroll-mt-20">
+<section id="process" class="border-b border-line py-28 md:py-40 scroll-mt-20">
   <div class="container-xl">
-    <SectionHeading
-      eyebrow="How It Works"
-      title="A deliberate process, not a demo."
-      description="We don't start with AI. We start with your software and your workflow — then decide where AI actually earns its place."
-    />
+    <SectionHeading eyebrow="How It Works" title="A deliberate process," accent="not a demo." />
 
-    <div class="mt-16 grid gap-px overflow-hidden rounded-xl border border-line bg-line md:grid-cols-4">
+    <div class="mt-20 grid gap-px overflow-hidden rounded-2xl border border-line bg-line md:grid-cols-4">
       {processSteps.map((step, i) => (
-        <div class="bg-ink-950 p-7 md:p-8" data-reveal style={`transition-delay: ${i * 90}ms`}>
-          <span class="font-mono text-sm text-text-faint">{step.index}</span>
-          <h3 class="mt-4 text-lg font-semibold text-white">{step.title}</h3>
-          <p class="mt-2.5 text-sm leading-relaxed text-text-dim">{step.description}</p>
+        <div
+          class="group relative bg-ink-950 p-8 transition-colors duration-500 hover:bg-ink-900 md:p-10"
+          data-reveal
+          style={`transition-delay: ${i * 90}ms`}
+        >
+          <span class="font-mono text-4xl font-medium text-ink-600 transition-colors duration-500 group-hover:text-accent-500 md:text-5xl">
+            {step.index}
+          </span>
+          <h3 class="mt-6 text-lg font-semibold tracking-tight text-white">{step.title}</h3>
+          <p class="mt-2 text-sm text-text-dim">{step.description}</p>
+          <span class="hairline-grad absolute inset-x-0 bottom-0 h-px"></span>
         </div>
       ))}
     </div>
