@@ -1,8 +1,9 @@
 ---
 import SectionHeading from "../SectionHeading.astro";
-import { services, tracks } from "../../data/services";
+import { services, tracks, type Track } from "../../data/services";
 
-const groups = (["existing", "new"] as const).map((key) => ({
+// Derived from the data, so adding a track in services.ts is enough.
+const groups = (Object.keys(tracks) as Track[]).map((key) => ({
   key,
   ...tracks[key],
   items: services

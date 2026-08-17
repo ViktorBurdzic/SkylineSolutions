@@ -1,8 +1,10 @@
+export type Track = keyof typeof tracks;
+
 export type Service = {
   tag: string;
   title: string;
-  /** Which starting point this service answers. Drives the two-track split. */
-  track: "existing" | "new";
+  /** Which starting point this service answers. Drives the track split. */
+  track: Track;
   headline: string;
   before: string;
   after: string;
@@ -46,9 +48,41 @@ export const services: Service[] = [
     after: "Software that fits exactly",
     points: ["APIs and integrations", "Data models that hold up", "Whatever stack suits"],
   },
+  {
+    tag: "05",
+    title: "Design & UX",
+    track: "team",
+    headline: "Screens that explain themselves.",
+    before: "A system only its builder can navigate",
+    after: "Software your team learns in a morning",
+    points: ["UX and interface design", "Design systems", "Clickable prototypes first", "Accessible by default"],
+  },
+  {
+    tag: "06",
+    title: "QA & Testing",
+    track: "team",
+    headline: "Found before your customers find it.",
+    before: "Your users report the bugs",
+    after: "Releases that hold up on day one",
+    points: ["Test plans and coverage", "Automated regression", "Release sign-off", "Bug triage and retests"],
+  },
+  {
+    tag: "07",
+    title: "Project Management",
+    track: "team",
+    headline: "Someone whose actual job is the deadline.",
+    before: "Status updates you have to chase",
+    after: "One person accountable for delivery",
+    points: ["Scope and milestones", "Sprint planning", "A single point of contact", "Change and risk control"],
+  },
 ];
 
+/**
+ * The tracks are written in the visitor's voice — they are the sentence a
+ * visitor would use to describe themselves, not a category name.
+ */
 export const tracks = {
   existing: { label: "I already have systems", hint: "Add AI to what you run" },
   new: { label: "I'm starting fresh and need a new solution", hint: "Build something new" },
+  team: { label: "I need a full delivery team", hint: "Design, QA, and delivery" },
 } as const;

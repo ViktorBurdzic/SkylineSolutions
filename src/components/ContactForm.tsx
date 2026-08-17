@@ -8,6 +8,7 @@ const helpOptions = [
   "Custom Software & Integrations",
   "New CRM / CMS Platform",
   "AI-Powered Modernization",
+  "Full delivery team (design, QA, PM)",
   "Not sure yet — general inquiry",
 ];
 

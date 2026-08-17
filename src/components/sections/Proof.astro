@@ -2,32 +2,20 @@
 import SectionHeading from "../SectionHeading.astro";
 import CaseStudyReel from "../CaseStudyReel.astro";
 import { caseStudies } from "../../data/caseStudies";
-
-const beats = caseStudies[0]?.beats.length ?? 0;
 ---
 
 {
   /* Renders nothing while there's no work to show, so the page can never carry
      an empty "proof" section. */
   caseStudies.length > 0 && (
-    <section id="work" class="work scroll-mt-20">
-      {/*
-        The runway is tall; the panel inside it sticks. The page keeps scrolling
-        normally — no wheel events are swallowed — but the reel holds still in
-        the viewport while that scroll walks it through its beats. Same
-        mechanism as the hero, so the two read as one behaviour.
-      */}
-      <div class="runway" data-runway style={`--beats:${beats}`}>
-        <div class="pin">
-          <div class="container-xl">
-            <SectionHeading eyebrow="Work" title="One job," accent="start to finish." />
+    <section id="work" class="border-b border-line py-28 md:py-40 scroll-mt-20">
+      <div class="container-xl">
+        <SectionHeading eyebrow="Work" title="One job," accent="start to finish." />
 
-            <div class="cases">
-              {caseStudies.map((study) => (
-                <CaseStudyReel study={study} />
-              ))}
-            </div>
-          </div>
+        <div class="cases">
+          {caseStudies.map((study) => (
+            <CaseStudyReel study={study} />
+          ))}
         </div>
       </div>
     </section>
@@ -35,52 +23,9 @@ const beats = caseStudies[0]?.beats.length ?? 0;
 }
 
 <style>
-  .work {
-    border-bottom: 1px solid var(--color-line);
-  }
-
-  .pin {
-    padding-block: 7rem;
-  }
-
   .cases {
-    margin-top: 2.5rem;
+    margin-top: 3.5rem;
     display: grid;
     gap: 1.5rem;
-  }
-
-  /*
-   * Pin only where there is room for it: skipped without JS and under reduced
-   * motion, where a pinned section that never advances would be a trap.
-   *
-   * `height` (not `min-height`) plus `overflow: hidden` is the important part,
-   * and it is what the hero does. With `min-height` the panel grows past the
-   * viewport whenever the content is taller, and `align-content: center` then
-   * pushes the heading up out of sight while the card scrolls before it sticks.
-   * A fixed viewport-height box can't do that — the reel sizes itself in vh to
-   * fit instead.
-   */
-  /* 700px is where heading + card still fit the clipped box without losing the
-     stack row off the bottom. Below it, the unpinned autoplaying card is used. */
-  @media (min-height: 700px) and (min-width: 640px) and (prefers-reduced-motion: no-preference) {
-    :global(html.js) .runway {
-      height: calc(100vh + var(--beats) * 55vh);
-    }
-
-    :global(html.js) .pin {
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      height: 100dvh;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding-block: 4.5rem 1.5rem;
-    }
-
-    :global(html.js) .cases {
-      margin-top: clamp(1rem, 3vh, 2.5rem);
-    }
   }
 </style>

@@ -18,8 +18,8 @@ const { study, class: className = "" } = Astro.props;
   <article class="reel" data-reel data-tilt="2">
     <span class="reel__rule" aria-hidden="true"></span>
 
-    <!-- Follows the pointer; explains that clicking freezes the sequence. -->
-    <span class="tip" data-tip aria-hidden="true">Click to hold</span>
+    <!-- Follows the pointer; explains both gestures. -->
+    <span class="tip" data-tip aria-hidden="true">Click to skip · hold to pause</span>
 
     <header class="reel__head">
       <p class="reel__ref">{study.ref}</p>
@@ -840,49 +840,33 @@ const { study, class: className = "" } = Astro.props;
     const caps = Array.from(reel.querySelectorAll<HTMLElement>("[data-cap]"));
     const segs = Array.from(reel.querySelectorAll<HTMLButtonElement>("[data-seg]"));
     const tip = reel.querySelector<HTMLElement>("[data-tip]");
-    const runway = reel.closest<HTMLElement>("[data-runway]");
 
-    /** How long a beat holds when the visitor is not scrolling. */
+    /** How long each beat holds before the reel moves on. */
     const BEAT_MS = 4200;
-    /** Quiet time after the last scroll before the clock takes over again. */
-    const IDLE_MS = 700;
 
     const count = scenes.length;
-    const clamp = (v: number, min = 0, max = 1) => Math.min(max, Math.max(min, v));
     const wrap = (v: number) => ((v % count) + count) % count;
 
-    /**
-     * The shown beat is `scrollBeat + offset`.
-     *
-     * `scrollBeat` is scroll position mapped over the runway, exactly as the
-     * hero maps its runway onto cards — so scrolling back genuinely goes back.
-     * `offset` is everything the clock and the segment buttons have added on
-     * top. Keeping them separate is what lets autoplay and scrolling coexist:
-     * autoplay never overwrites the scroll position, it moves relative to it,
-     * so resuming a scroll can't snap the reel back to where it was.
-     */
-    let scrollBeat = 0;
-    let offset = 0;
-    let index = -1;
-
+    let index = 0;
+    /** True while the pointer is held down. Scenes keep moving; the clock stops. */
     let held = false;
     let onScreen = false;
-    let scrubbing = false;
+    /** The active segment bar filling. Reaching the end advances the beat. */
     let clock: Animation | null = null;
-
-    const clockShouldRun = () => onScreen && !held && !scrubbing;
 
     const sync = () => {
       reel.toggleAttribute("data-paused", held);
       reel.toggleAttribute("data-off", !onScreen);
-      if (tip) tip.textContent = held ? "Click to resume" : "Click to hold";
-      if (clock) clockShouldRun() ? clock.play() : clock.pause();
+      if (tip) tip.textContent = held ? "Paused" : "Click to skip · hold to pause";
+      if (!clock) return;
+      if (held || !onScreen) clock.pause();
+      else clock.play();
     };
 
     /**
      * The countdown to the next beat, drawn on the active segment. Web
      * Animations rather than a CSS animation so it can be paused and resumed
-     * mid-flight without restarting from zero.
+     * mid-flight instead of restarting from zero each time.
      */
     const startClock = () => {
       clock?.cancel();
@@ -895,15 +879,12 @@ const { study, class: className = "" } = Astro.props;
         easing: "linear",
         fill: "forwards",
       });
-      clock.onfinish = () => {
-        offset += 1;
-        render();
-      };
-      if (!clockShouldRun()) clock.pause();
+      clock.onfinish = () => show(index + 1);
+      if (held || !onScreen) clock.pause();
     };
 
     const show = (next: number) => {
-      index = next;
+      index = wrap(next);
 
       scenes.forEach((scene, i) =>
         i === index ? scene.setAttribute("data-state", "on") : scene.removeAttribute("data-state")
@@ -919,77 +900,49 @@ const { study, class: className = "" } = Astro.props;
       startClock();
     };
 
-    const render = () => {
-      const next = wrap(scrollBeat + offset);
-      if (next !== index) show(next);
-    };
+    /* ---------- hold to pause, tap to skip ---------- */
 
-    /* ---------- scroll position picks the beat ---------- */
+    // Both gestures start with the same pointerdown, so they can only be told
+    // apart on release: under CLICK_MS it was a click, over it was a hold.
+    const CLICK_MS = 200;
+    let downAt = 0;
 
-    // Same mapping as the hero: how far the runway has travelled past the top
-    // of the viewport, split evenly between the beats.
-    const fromScroll = () => {
-      if (!runway) return 0;
-      const span = runway.offsetHeight - window.innerHeight;
-      if (span <= 0) return 0; // not pinned — the clock is the only driver
-      const p = clamp(-runway.getBoundingClientRect().top / span);
-      return Math.min(count - 1, Math.floor(p * count));
-    };
-
-    let ticking = false;
-    let idle = 0;
-
-    const onScroll = () => {
-      ticking = false;
-
-      const next = fromScroll();
-      if (next !== scrollBeat) {
-        scrollBeat = next;
-        render();
-      }
-
-      // While the visitor is scrolling they own the sequence; the clock waits
-      // so it can't add a beat on top of the one they just scrolled to.
-      scrubbing = true;
+    const grab = () => {
+      if (held) return;
+      held = true;
+      downAt = performance.now();
       sync();
-      clearTimeout(idle);
-      idle = window.setTimeout(() => {
-        scrubbing = false;
-        sync();
-      }, IDLE_MS);
     };
 
-    window.addEventListener(
-      "scroll",
-      () => {
-        if (ticking) return;
-        ticking = true;
-        requestAnimationFrame(onScroll);
-      },
-      { passive: true }
-    );
+    /** `advance` is false for the releases that aren't a deliberate click. */
+    const release = (advance: boolean) => {
+      if (!held) return;
+      const quick = performance.now() - downAt < CLICK_MS;
+      held = false;
+      sync();
+      if (advance && quick) show(index + 1);
+    };
 
-    window.addEventListener("resize", () => {
-      scrollBeat = fromScroll();
-      render();
-    }, { passive: true });
+    reel.addEventListener("pointerdown", grab);
+    reel.addEventListener("pointerup", () => release(true));
+    // Dragging off the card, or tabbing away mid-hold, must neither skip a beat
+    // nor leave the reel stuck paused.
+    reel.addEventListener("pointercancel", () => release(false));
+    reel.addEventListener("pointerleave", () => release(false));
+    window.addEventListener("blur", () => release(false));
 
-    /* ---------- controls ---------- */
+    /* ---------- jump to a beat ---------- */
 
-    // Picking a beat moves the offset, not the scroll position, so the choice
-    // survives the next scroll instead of being immediately overwritten.
-    segs.forEach((seg, i) =>
+    segs.forEach((seg, i) => {
+      // Keep a click on the transport from registering as a hold.
+      seg.addEventListener("pointerdown", (event) => event.stopPropagation());
       seg.addEventListener("click", (event) => {
         event.stopPropagation();
-        offset = i - scrollBeat;
-        render();
-      })
-    );
-
-    reel.addEventListener("click", () => {
-      held = !held;
-      sync();
+        show(i);
+      });
     });
+
+    /* ---------- tooltip ---------- */
 
     reel.addEventListener("pointermove", (event) => {
       if (!tip) return;
@@ -1003,6 +956,8 @@ const { study, class: className = "" } = Astro.props;
     reel.addEventListener("pointerenter", () => reel.setAttribute("data-tip-on", ""));
     reel.addEventListener("pointerleave", () => reel.removeAttribute("data-tip-on"));
 
+    /* ---------- only run while visible ---------- */
+
     const io = new IntersectionObserver(
       ([entry]) => {
         onScreen = entry.isIntersecting;
@@ -1011,8 +966,7 @@ const { study, class: className = "" } = Astro.props;
       { threshold: 0.35 }
     );
 
-    scrollBeat = fromScroll();
-    render();
+    show(0);
     sync();
     io.observe(reel);
   }
