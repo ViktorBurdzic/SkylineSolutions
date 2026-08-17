@@ -1,0 +1,1019 @@
+---
+import type { CaseStudy } from "../data/caseStudies";
+
+interface Props {
+  study: CaseStudy;
+  class?: string;
+}
+
+const { study, class: className = "" } = Astro.props;
+---
+
+<!--
+  A case study as a reel, not a document: four scenes that play themselves,
+  each captioned in a few words. Without JS every beat is simply shown stacked,
+  and under reduced motion nothing loops.
+-->
+<div class:list={["reel-wrap", className]} data-reveal>
+  <article class="reel" data-reel data-tilt="2">
+    <span class="reel__rule" aria-hidden="true"></span>
+
+    <!-- Follows the pointer; explains that clicking freezes the sequence. -->
+    <span class="tip" data-tip aria-hidden="true">Click to hold</span>
+
+    <header class="reel__head">
+      <p class="reel__ref">{study.ref}</p>
+      <p class="reel__context">{study.context}</p>
+      {study.illustrative && <p class="reel__flag">Illustrative</p>}
+    </header>
+
+    <h3 class="reel__title">{study.title}</h3>
+
+    <!-- ---------- stage ---------- -->
+    <div class="stage">
+      {study.beats.map((beat, i) => (
+        <div class="scene" data-scene={i} data-kind={beat.scene} data-state={i === 0 ? "on" : undefined}>
+          {beat.scene === "pile" && (
+            <div class="pile" aria-hidden="true">
+              <div class="pile__docs">
+                {Array.from({ length: 7 }).map((_, d) => (
+                  <span class="doc" style={`--d:${d}`}></span>
+                ))}
+              </div>
+              <div class="pile__hand">
+                <span class="pile__count"><b data-count="300">300</b><i>/wk</i></span>
+                <span class="pile__bar"><span></span></span>
+              </div>
+            </div>
+          )}
+
+          {beat.scene === "pipe" && (
+            <div class="pipe" aria-hidden="true">
+              <div class="node">Inbox</div>
+              <div class="wire"><span class="pkt" style="--p:0"></span><span class="pkt" style="--p:1"></span></div>
+              <div class="node node--core">
+                <span class="node__ring"></span>
+                Agent
+              </div>
+              <div class="wire"><span class="pkt" style="--p:0.5"></span></div>
+              <div class="node">ERP</div>
+            </div>
+          )}
+
+          {beat.scene === "guard" && (
+            <div class="guard" aria-hidden="true">
+              <div class="lane lane--auto"><span class="lane__tag">auto</span><span class="ball"></span></div>
+              <div class="meter">
+                <span class="meter__fill"></span>
+                <span class="meter__mark"></span>
+              </div>
+              <div class="lane lane--human"><span class="lane__tag">human</span><span class="ball ball--slow"></span></div>
+            </div>
+          )}
+
+          {beat.scene === "result" && (
+            <div class="final" aria-hidden="true">
+              <svg class="arc" viewBox="0 0 120 120">
+                <circle class="arc__track" cx="60" cy="60" r="52" />
+                <circle class="arc__fill" cx="60" cy="60" r="52" style={`--pct:${study.result.value}`} />
+              </svg>
+              <p class="final__num">
+                <span data-count={study.result.value}>{study.result.display}</span>
+                {study.result.unit && <i>{study.result.unit}</i>}
+              </p>
+              <p class="final__label">{study.result.label}</p>
+            </div>
+          )}
+        </div>
+      ))}
+
+      <!-- Caption sits over the scene, swapped as beats advance. -->
+      <div class="caption">
+        {study.beats.map((beat, i) => (
+          <p class="cap" data-cap={i} data-state={i === 0 ? "on" : undefined}>
+            <span class="cap__n">{String(i + 1).padStart(2, "0")}</span>
+            <span class="cap__label">{beat.label}</span>
+            <span class="cap__line">{beat.line}</span>
+          </p>
+        ))}
+      </div>
+    </div>
+
+    <!-- ---------- transport ---------- -->
+    <div class="segs" aria-label="Case study beats">
+      {study.beats.map((beat, i) => (
+        <button
+          class="seg"
+          type="button"
+          data-seg={i}
+          data-on={i === 0 ? "" : undefined}
+          aria-label={`${beat.label}: ${beat.line}`}
+        >
+          <span class="seg__fill"></span>
+        </button>
+      ))}
+    </div>
+
+    {study.stack.length > 0 && (
+      <footer class="reel__stack">
+        {study.stack.map((item, i) => (
+          <span class="reel__tag" style={`--t:${i}`}>{item}</span>
+        ))}
+      </footer>
+    )}
+  </article>
+</div>
+
+<style>
+  .reel {
+    position: relative;
+    overflow: hidden;
+    border-radius: 1.25rem;
+    border: 1px solid var(--color-line-strong);
+    background: linear-gradient(180deg, var(--color-ink-800), var(--color-ink-900));
+    padding: clamp(1.1rem, 2.4vh, 2.25rem) clamp(1.25rem, 4vw, 2.5rem);
+    box-shadow: 0 40px 90px -60px rgba(0, 0, 0, 1);
+  }
+
+  .reel__rule {
+    position: absolute;
+    inset: 0 0 auto;
+    height: 2px;
+    background: linear-gradient(to right, var(--color-accent-500), var(--color-cyan-400));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 1.1s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  :global(html.js [data-reveal].is-visible) .reel__rule,
+  :global(html:not(.js)) .reel__rule {
+    transform: scaleX(1);
+  }
+
+  /* ---------- header ---------- */
+
+  .reel__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.9rem;
+  }
+
+  .reel__ref {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-accent-400);
+  }
+
+  .reel__context {
+    flex: 1;
+    min-width: 8rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.08em;
+    color: var(--color-text-faint);
+  }
+
+  .reel__flag {
+    border-radius: 999px;
+    border: 1px solid rgba(255, 175, 63, 0.45);
+    background: rgba(255, 175, 63, 0.12);
+    padding: 0.2rem 0.6rem;
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #ffbf6b;
+  }
+
+  .reel__title {
+    margin-top: clamp(0.5rem, 1.4vh, 0.9rem);
+    max-width: 24rem;
+    font-size: clamp(1.35rem, 2.2vh + 1.2vw, 2.25rem);
+    font-weight: 600;
+    line-height: 1.12;
+    letter-spacing: -0.03em;
+    color: #fff;
+    text-wrap: balance;
+  }
+
+  /* ---------- stage ---------- */
+
+  .stage {
+    position: relative;
+    margin-top: clamp(0.85rem, 2vh, 1.75rem);
+    display: grid;
+    grid-template-areas: "stage";
+    min-height: clamp(12rem, 30vh, 16rem);
+    border-radius: 1rem;
+    border: 1px solid var(--color-line);
+    background: radial-gradient(30rem 16rem at 50% 0%, rgba(59, 130, 246, 0.1), transparent 70%),
+      rgba(5, 7, 10, 0.5);
+    overflow: hidden;
+  }
+
+  @media (min-width: 700px) {
+    .stage {
+      min-height: clamp(13rem, 32vh, 19rem);
+    }
+  }
+
+  .scene {
+    grid-area: stage;
+    display: grid;
+    place-items: center;
+    padding: 2rem 1.25rem 5.5rem;
+    opacity: 0;
+    transform: scale(0.97);
+    filter: blur(6px);
+    transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+      filter 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+  }
+
+  .scene[data-state="on"] {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+
+  /* Without JS every scene is simply visible, stacked in the flow. */
+  :global(html:not(.js)) .stage {
+    grid-template-areas: none;
+    grid-auto-flow: row;
+  }
+
+  :global(html:not(.js)) .scene {
+    grid-area: auto;
+    opacity: 1;
+    transform: none;
+    filter: none;
+    padding-bottom: 2rem;
+  }
+
+  /* ---------- scene: pile (the manual before) ---------- */
+
+  .pile {
+    display: grid;
+    gap: 1.5rem;
+    place-items: center;
+  }
+
+  .pile__docs {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.4rem;
+    height: 4.5rem;
+  }
+
+  .doc {
+    width: 1.6rem;
+    height: 2.1rem;
+    border-radius: 0.2rem;
+    border: 1px solid rgba(255, 175, 63, 0.5);
+    background: linear-gradient(180deg, rgba(255, 175, 63, 0.22), rgba(255, 175, 63, 0.06));
+  }
+
+  [data-state="on"] .doc {
+    animation: docDrop 2.6s calc(var(--d) * 0.16s) cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  }
+
+  @keyframes docDrop {
+    0% { opacity: 0; transform: translateY(-3rem) rotate(-12deg); }
+    22%, 82% { opacity: 1; transform: none; }
+    100% { opacity: 0; transform: translateY(0.6rem); }
+  }
+
+  .pile__hand {
+    display: grid;
+    gap: 0.6rem;
+    justify-items: center;
+  }
+
+  .pile__count {
+    display: flex;
+    align-items: baseline;
+    gap: 0.2rem;
+    font-family: var(--font-mono);
+    color: #fff;
+  }
+
+  .pile__count b {
+    font-size: 2.25rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .pile__count i {
+    font-style: normal;
+    font-size: 0.8125rem;
+    color: var(--color-text-faint);
+  }
+
+  .pile__bar {
+    display: block;
+    width: 9rem;
+    height: 3px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    overflow: hidden;
+  }
+
+  .pile__bar span {
+    display: block;
+    height: 100%;
+    width: 40%;
+    border-radius: inherit;
+    background: #ffaf3f;
+  }
+
+  [data-state="on"] .pile__bar span {
+    animation: grind 2.2s ease-in-out infinite;
+  }
+
+  @keyframes grind {
+    0% { transform: translateX(-110%); }
+    100% { transform: translateX(260%); }
+  }
+
+  /* ---------- scene: pipe (what was built) ---------- */
+
+  .pipe {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    max-width: 30rem;
+  }
+
+  .node {
+    position: relative;
+    flex: none;
+    border-radius: 0.6rem;
+    border: 1px solid var(--color-line-strong);
+    background: rgba(255, 255, 255, 0.03);
+    padding: 0.6rem 0.7rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.06em;
+    color: var(--color-text-dim);
+  }
+
+  .node--core {
+    border-color: rgba(59, 130, 246, 0.6);
+    background: rgba(59, 130, 246, 0.16);
+    color: #fff;
+    padding-inline: 1rem;
+  }
+
+  .node__ring {
+    position: absolute;
+    inset: -6px;
+    border-radius: 0.85rem;
+    border: 1px solid rgba(59, 130, 246, 0.5);
+  }
+
+  [data-state="on"] .node__ring {
+    animation: ping 2s ease-out infinite;
+  }
+
+  @keyframes ping {
+    0% { opacity: 0.9; transform: scale(0.92); }
+    100% { opacity: 0; transform: scale(1.15); }
+  }
+
+  .wire {
+    position: relative;
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, var(--color-line-strong), rgba(59, 130, 246, 0.55));
+  }
+
+  .pkt {
+    position: absolute;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    margin-top: -3px;
+    border-radius: 999px;
+    background: var(--color-cyan-400);
+    box-shadow: 0 0 12px 3px rgba(34, 211, 238, 0.6);
+    opacity: 0;
+  }
+
+  [data-state="on"] .pkt {
+    animation: travel 1.8s calc(var(--p) * -0.9s) linear infinite;
+  }
+
+  @keyframes travel {
+    0% { left: 0; opacity: 0; }
+    12%, 88% { opacity: 1; }
+    100% { left: 100%; opacity: 0; }
+  }
+
+  /* ---------- scene: guard (the escalation rule) ---------- */
+
+  .guard {
+    display: grid;
+    gap: 0.9rem;
+    width: 100%;
+    max-width: 26rem;
+  }
+
+  .lane {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 2.1rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--color-line);
+    padding-left: 0.7rem;
+  }
+
+  .lane--auto { border-color: rgba(34, 211, 238, 0.4); }
+  .lane--human { border-color: rgba(255, 175, 63, 0.4); }
+
+  .lane__tag {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-text-faint);
+  }
+
+  .ball {
+    position: absolute;
+    top: 50%;
+    left: 4.5rem;
+    width: 8px;
+    height: 8px;
+    margin-top: -4px;
+    border-radius: 999px;
+    background: var(--color-cyan-400);
+    box-shadow: 0 0 14px 4px rgba(34, 211, 238, 0.5);
+  }
+
+  .ball--slow {
+    background: #ffaf3f;
+    box-shadow: 0 0 14px 4px rgba(255, 175, 63, 0.45);
+  }
+
+  [data-state="on"] .ball {
+    animation: rollFast 1.6s linear infinite;
+  }
+
+  [data-state="on"] .ball--slow {
+    animation: rollSlow 3.2s 0.4s ease-in-out infinite;
+  }
+
+  @keyframes rollFast {
+    0% { left: 4.5rem; opacity: 0; }
+    10%, 90% { opacity: 1; }
+    100% { left: calc(100% - 1rem); opacity: 0; }
+  }
+
+  @keyframes rollSlow {
+    0% { left: 4.5rem; opacity: 0; }
+    15% { opacity: 1; }
+    60% { left: 55%; opacity: 1; }
+    75% { left: 55%; }
+    100% { left: calc(100% - 1rem); opacity: 0; }
+  }
+
+  .meter {
+    position: relative;
+    height: 6px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.06);
+    overflow: hidden;
+  }
+
+  .meter__fill {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(to right, #ffaf3f, var(--color-cyan-400));
+    transform-origin: left;
+  }
+
+  [data-state="on"] .meter__fill {
+    animation: confidence 3.2s ease-in-out infinite;
+  }
+
+  @keyframes confidence {
+    0%, 100% { transform: scaleX(0.32); }
+    50% { transform: scaleX(0.95); }
+  }
+
+  .meter__mark {
+    position: absolute;
+    top: -3px;
+    bottom: -3px;
+    left: 62%;
+    width: 1px;
+    background: rgba(255, 255, 255, 0.55);
+  }
+
+  /* ---------- scene: result ---------- */
+
+  .final {
+    position: relative;
+    display: grid;
+    place-items: center;
+    text-align: center;
+  }
+
+  .arc {
+    position: absolute;
+    width: 11rem;
+    height: 11rem;
+    transform: rotate(-90deg);
+  }
+
+  .arc__track,
+  .arc__fill {
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+
+  .arc__track {
+    stroke: rgba(255, 255, 255, 0.07);
+  }
+
+  .arc__fill {
+    stroke: var(--color-cyan-400);
+    /* r=52 → circumference ≈ 326.7 */
+    stroke-dasharray: 326.7;
+    stroke-dashoffset: calc(326.7 - 326.7 * var(--pct) / 100);
+    filter: drop-shadow(0 0 6px rgba(34, 211, 238, 0.6));
+  }
+
+  [data-state="on"] .arc__fill {
+    animation: sweep 1.6s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  }
+
+  @keyframes sweep {
+    from { stroke-dashoffset: 326.7; }
+  }
+
+  .final__num {
+    display: flex;
+    align-items: baseline;
+    font-size: clamp(3rem, 11vw, 4.5rem);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.05em;
+    color: #fff;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .final__num i {
+    font-style: normal;
+    font-size: 0.4em;
+    color: var(--color-cyan-400);
+  }
+
+  .final__label {
+    margin-top: 0.4rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-text-dim);
+  }
+
+  /* ---------- caption ---------- */
+
+  .caption {
+    position: absolute;
+    inset: auto 0 0;
+    display: grid;
+    grid-template-areas: "cap";
+    padding: 1.25rem;
+    background: linear-gradient(to top, rgba(5, 7, 10, 0.9), transparent);
+  }
+
+  .cap {
+    grid-area: cap;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.35rem 0.7rem;
+    opacity: 0;
+    transform: translateY(0.6rem);
+    transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .cap[data-state="on"] {
+    opacity: 1;
+    transform: none;
+  }
+
+  :global(html:not(.js)) .caption {
+    position: static;
+    grid-template-areas: none;
+    gap: 0.5rem;
+    background: none;
+  }
+
+  :global(html:not(.js)) .cap {
+    grid-area: auto;
+    opacity: 1;
+    transform: none;
+  }
+
+  .cap__n {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.16em;
+    color: var(--color-accent-400);
+  }
+
+  .cap__label {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-text-faint);
+  }
+
+  .cap__line {
+    width: 100%;
+    font-size: clamp(1rem, 2.4vw, 1.25rem);
+    font-weight: 500;
+    color: #fff;
+    text-wrap: balance;
+  }
+
+  /* ---------- transport ---------- */
+
+  .segs {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.4rem;
+  }
+
+  .seg {
+    flex: 1;
+    height: 3px;
+    border-radius: 999px;
+    background: var(--color-line-strong);
+    overflow: hidden;
+    cursor: pointer;
+    padding: 0;
+    border: 0;
+  }
+
+  .seg__fill {
+    display: block;
+    height: 100%;
+    width: 100%;
+    border-radius: inherit;
+    background: linear-gradient(to right, var(--color-accent-500), var(--color-cyan-400));
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  /*
+   * The active segment is filled by the Web Animations API rather than a CSS
+   * animation, so the countdown can be paused and resumed mid-flight — a CSS
+   * animation would restart from zero every time scrolling interrupted it.
+   */
+  .seg[data-done] .seg__fill {
+    transform: scaleX(1);
+  }
+
+  /*
+   * `data-off` only ever means "scrolled out of view" — no point burning frames
+   * on scenes nobody is looking at. Holding the reel pauses the countdown (the
+   * segment animation, handled in script) and deliberately leaves the scene
+   * running.
+   */
+  .reel[data-off] .scene *,
+  .reel[data-off] .scene {
+    animation-play-state: paused;
+  }
+
+  /* ---------- hold tooltip ---------- */
+
+  .reel {
+    cursor: pointer;
+  }
+
+  .tip {
+    position: absolute;
+    z-index: 3;
+    top: 0;
+    left: 0;
+    /* --tx/--ty are written by the pointer handler. */
+    transform: translate3d(calc(var(--tx, 0) * 1px), calc(var(--ty, 0) * 1px), 0) translate(-50%, -180%);
+    /* The card clips its overflow, so near the top edge the tip flips below. */
+    border-radius: 999px;
+    border: 1px solid var(--color-line-strong);
+    background: rgba(5, 7, 10, 0.92);
+    padding: 0.3rem 0.7rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+    color: var(--color-text);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+
+  .tip[data-below] {
+    transform: translate3d(calc(var(--tx, 0) * 1px), calc(var(--ty, 0) * 1px), 0) translate(-50%, 80%);
+  }
+
+  .reel[data-tip-on] .tip {
+    opacity: 1;
+  }
+
+  .reel[data-paused] .tip {
+    border-color: rgba(34, 211, 238, 0.5);
+    color: var(--color-cyan-400);
+  }
+
+  /* No hover on touch, so no tooltip. */
+  @media (pointer: coarse) {
+    .tip {
+      display: none;
+    }
+    .reel {
+      cursor: auto;
+    }
+  }
+
+
+  /* ---------- stack ---------- */
+
+  .reel__stack {
+    margin-top: clamp(0.85rem, 2vh, 1.5rem);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    border-top: 1px solid var(--color-line);
+    padding-top: clamp(0.75rem, 1.8vh, 1.25rem);
+  }
+
+  .reel__tag {
+    border-radius: 0.45rem;
+    border: 1px solid var(--color-line-strong);
+    background: rgba(255, 255, 255, 0.03);
+    padding: 0.3rem 0.6rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-text-dim);
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.25s ease, color 0.25s ease;
+  }
+
+  :global(html.js [data-reveal].is-visible) .reel__tag {
+    animation: tagIn 0.5s calc(0.4s + var(--t) * 0.06s) backwards cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes tagIn {
+    from { opacity: 0; transform: translateY(10px) scale(0.9); }
+  }
+
+  .reel__tag:hover {
+    transform: translateY(-3px);
+    border-color: rgba(59, 130, 246, 0.55);
+    color: #fff;
+  }
+
+  /* ---------- reduced motion ---------- */
+
+  @media (prefers-reduced-motion: reduce) {
+    .stage {
+      grid-template-areas: none;
+      grid-auto-flow: row;
+      min-height: 0;
+    }
+    .scene {
+      grid-area: auto;
+      opacity: 1;
+      transform: none;
+      filter: none;
+      padding: 1.5rem 1rem;
+    }
+    .caption {
+      position: static;
+      grid-template-areas: none;
+      gap: 0.75rem;
+      background: none;
+    }
+    .cap {
+      grid-area: auto;
+      opacity: 1;
+      transform: none;
+    }
+    .doc,
+    .node__ring,
+    .pkt,
+    .ball,
+    .meter__fill,
+    .arc__fill,
+    .pile__bar span,
+    .reel__tag {
+      animation: none !important;
+    }
+    .seg__fill {
+      transform: scaleX(1);
+    }
+    .reel__rule {
+      transform: scaleX(1);
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const reel = document.querySelector<HTMLElement>("[data-reel]");
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  if (reel && !reduced.matches) {
+    const scenes = Array.from(reel.querySelectorAll<HTMLElement>("[data-scene]"));
+    const caps = Array.from(reel.querySelectorAll<HTMLElement>("[data-cap]"));
+    const segs = Array.from(reel.querySelectorAll<HTMLButtonElement>("[data-seg]"));
+    const tip = reel.querySelector<HTMLElement>("[data-tip]");
+    const runway = reel.closest<HTMLElement>("[data-runway]");
+
+    /** How long a beat holds when the visitor is not scrolling. */
+    const BEAT_MS = 4200;
+    /** Quiet time after the last scroll before the clock takes over again. */
+    const IDLE_MS = 700;
+
+    const count = scenes.length;
+    const clamp = (v: number, min = 0, max = 1) => Math.min(max, Math.max(min, v));
+    const wrap = (v: number) => ((v % count) + count) % count;
+
+    /**
+     * The shown beat is `scrollBeat + offset`.
+     *
+     * `scrollBeat` is scroll position mapped over the runway, exactly as the
+     * hero maps its runway onto cards — so scrolling back genuinely goes back.
+     * `offset` is everything the clock and the segment buttons have added on
+     * top. Keeping them separate is what lets autoplay and scrolling coexist:
+     * autoplay never overwrites the scroll position, it moves relative to it,
+     * so resuming a scroll can't snap the reel back to where it was.
+     */
+    let scrollBeat = 0;
+    let offset = 0;
+    let index = -1;
+
+    let held = false;
+    let onScreen = false;
+    let scrubbing = false;
+    let clock: Animation | null = null;
+
+    const clockShouldRun = () => onScreen && !held && !scrubbing;
+
+    const sync = () => {
+      reel.toggleAttribute("data-paused", held);
+      reel.toggleAttribute("data-off", !onScreen);
+      if (tip) tip.textContent = held ? "Click to resume" : "Click to hold";
+      if (clock) clockShouldRun() ? clock.play() : clock.pause();
+    };
+
+    /**
+     * The countdown to the next beat, drawn on the active segment. Web
+     * Animations rather than a CSS animation so it can be paused and resumed
+     * mid-flight without restarting from zero.
+     */
+    const startClock = () => {
+      clock?.cancel();
+
+      const fill = segs[index]?.firstElementChild as HTMLElement | null;
+      if (!fill) return;
+
+      clock = fill.animate([{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }], {
+        duration: BEAT_MS,
+        easing: "linear",
+        fill: "forwards",
+      });
+      clock.onfinish = () => {
+        offset += 1;
+        render();
+      };
+      if (!clockShouldRun()) clock.pause();
+    };
+
+    const show = (next: number) => {
+      index = next;
+
+      scenes.forEach((scene, i) =>
+        i === index ? scene.setAttribute("data-state", "on") : scene.removeAttribute("data-state")
+      );
+      caps.forEach((cap, i) =>
+        i === index ? cap.setAttribute("data-state", "on") : cap.removeAttribute("data-state")
+      );
+      segs.forEach((seg, i) => {
+        seg.toggleAttribute("data-on", i === index);
+        seg.toggleAttribute("data-done", i < index);
+      });
+
+      startClock();
+    };
+
+    const render = () => {
+      const next = wrap(scrollBeat + offset);
+      if (next !== index) show(next);
+    };
+
+    /* ---------- scroll position picks the beat ---------- */
+
+    // Same mapping as the hero: how far the runway has travelled past the top
+    // of the viewport, split evenly between the beats.
+    const fromScroll = () => {
+      if (!runway) return 0;
+      const span = runway.offsetHeight - window.innerHeight;
+      if (span <= 0) return 0; // not pinned — the clock is the only driver
+      const p = clamp(-runway.getBoundingClientRect().top / span);
+      return Math.min(count - 1, Math.floor(p * count));
+    };
+
+    let ticking = false;
+    let idle = 0;
+
+    const onScroll = () => {
+      ticking = false;
+
+      const next = fromScroll();
+      if (next !== scrollBeat) {
+        scrollBeat = next;
+        render();
+      }
+
+      // While the visitor is scrolling they own the sequence; the clock waits
+      // so it can't add a beat on top of the one they just scrolled to.
+      scrubbing = true;
+      sync();
+      clearTimeout(idle);
+      idle = window.setTimeout(() => {
+        scrubbing = false;
+        sync();
+      }, IDLE_MS);
+    };
+
+    window.addEventListener(
+      "scroll",
+      () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(onScroll);
+      },
+      { passive: true }
+    );
+
+    window.addEventListener("resize", () => {
+      scrollBeat = fromScroll();
+      render();
+    }, { passive: true });
+
+    /* ---------- controls ---------- */
+
+    // Picking a beat moves the offset, not the scroll position, so the choice
+    // survives the next scroll instead of being immediately overwritten.
+    segs.forEach((seg, i) =>
+      seg.addEventListener("click", (event) => {
+        event.stopPropagation();
+        offset = i - scrollBeat;
+        render();
+      })
+    );
+
+    reel.addEventListener("click", () => {
+      held = !held;
+      sync();
+    });
+
+    reel.addEventListener("pointermove", (event) => {
+      if (!tip) return;
+      const rect = reel.getBoundingClientRect();
+      const y = event.clientY - rect.top;
+      tip.style.setProperty("--tx", String(event.clientX - rect.left));
+      tip.style.setProperty("--ty", String(y));
+      tip.toggleAttribute("data-below", y < 56);
+    });
+
+    reel.addEventListener("pointerenter", () => reel.setAttribute("data-tip-on", ""));
+    reel.addEventListener("pointerleave", () => reel.removeAttribute("data-tip-on"));
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        onScreen = entry.isIntersecting;
+        sync();
+      },
+      { threshold: 0.35 }
+    );
+
+    scrollBeat = fromScroll();
+    render();
+    sync();
+    io.observe(reel);
+  }
+</script>

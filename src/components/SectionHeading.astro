@@ -12,9 +12,44 @@ const { eyebrow, title, accent, description, align = "left", class: className = 
 ---
 
 <div class:list={["max-w-3xl", align === "center" && "mx-auto text-center", className]} data-reveal>
-  <p class="eyebrow mb-5">{eyebrow}</p>
-  <h2 class="text-balance text-3xl font-semibold leading-[1.1] tracking-tight text-white md:text-5xl">
+  <p class="eyebrow eyebrow--rule mb-5">{eyebrow}</p>
+  <h2
+    class="text-balance text-3xl font-semibold leading-[1.1] tracking-tight text-white md:text-5xl"
+    data-split
+  >
     {title}{accent && <> <span class="text-gradient">{accent}</span></>}
   </h2>
-  {description && <p class="mt-5 max-w-xl text-base leading-relaxed text-text-dim md:text-lg">{description}</p>}
+  {description && <p class="mt-5 max-w-xl text-base leading-relaxed text-text-dim">{description}</p>}
 </div>
+
+<style>
+  /* A rule that draws itself out from the label once the heading reveals. */
+  .eyebrow--rule {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .eyebrow--rule::after {
+    content: "";
+    flex: 1;
+    max-width: 5rem;
+    height: 1px;
+    background: linear-gradient(to right, var(--color-accent-400), transparent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.9s 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  :global(html.js [data-reveal].is-visible) .eyebrow--rule::after,
+  :global(html:not(.js)) .eyebrow--rule::after {
+    transform: scaleX(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .eyebrow--rule::after {
+      transform: scaleX(1);
+      transition: none;
+    }
+  }
+</style>

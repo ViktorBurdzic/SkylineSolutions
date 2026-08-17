@@ -50,5 +50,5 @@ export const services: Service[] = [
 
 export const tracks = {
   existing: { label: "I already have systems", hint: "Add AI to what you run" },
-  new: { label: "I'm starting fresh and need new solution", hint: "Build something new" },
+  new: { label: "I'm starting fresh and need a new solution", hint: "Build something new" },
 } as const;

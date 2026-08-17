@@ -10,6 +10,15 @@ export const SITE = {
   locale: "en",
 };
 
+// The site speaks as "we" (the company). This is the person behind it — used by
+// the footer credit and the `founder` entry in Layout.astro's structured data,
+// which is what ties the brand to a real, named human.
+export const AUTHOR = {
+  name: "Viktor Burdzic",
+  role: "Founder — Senior .NET / C# Engineer",
+  linkedin: "https://www.linkedin.com/in/viktor-burdzic-37092b229/", // TODO: replace with your real profile URL
+};
+
 // Web3Forms decides the destination inbox from the access key itself, not from
 // anything sent with the request — so this key must be the one issued to
 // skylinesolutionsai@gmail.com. Get it free at https://web3forms.com.

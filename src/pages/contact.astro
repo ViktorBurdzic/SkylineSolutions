@@ -6,7 +6,7 @@ import { SITE } from "../config/site";
 
 <Layout
   title="Contact"
-  description="Tell Skyline Solutions what your team currently does manually — we'll explore whether AI or custom software can make it faster, simpler, or more reliable."
+  description="Tell Skyline Solutions what your team currently does manually — we'll give you an honest read on whether AI or custom software can make it faster, simpler, or more reliable."
   path="/contact"
 >
   <section class="border-b border-line py-20 md:py-28">
@@ -24,7 +24,10 @@ import { SITE } from "../config/site";
 
           <div class="mt-10 space-y-2 border-t border-line pt-8">
             <p class="text-sm font-medium text-white">Email</p>
-            <a href={`mailto:${SITE.email}`} class="text-sm text-accent-400 hover:text-accent-300">
+            <a
+              href={`mailto:${SITE.email}`}
+              class="text-sm text-accent-400 transition-colors duration-200 hover:text-white"
+            >
               {SITE.email}
             </a>
           </div>

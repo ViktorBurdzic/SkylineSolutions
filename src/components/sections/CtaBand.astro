@@ -5,7 +5,7 @@ import { withBase } from "../../utils/url";
 
 <section class="py-28 md:py-40">
   <div class="container-xl">
-    <div class="relative overflow-hidden rounded-3xl border border-line bg-ink-900/60 px-8 py-20 text-center noise-surface md:px-16 md:py-28">
+    <div class="relative overflow-hidden rounded-3xl border border-line bg-ink-900/60 px-6 py-16 text-center noise-surface sm:px-8 sm:py-20 md:px-16 md:py-28">
       <div
         class="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_50%_0%,rgba(59,130,246,0.18),transparent_60%)]"
       >
@@ -14,15 +14,12 @@ import { withBase } from "../../utils/url";
       <h2
         class="mx-auto max-w-3xl text-balance text-3xl font-semibold leading-[1.1] tracking-tight text-white md:text-5xl"
         data-reveal
+        data-split
       >
         Something to automate, or <span class="text-gradient">something to build?</span>
       </h2>
-      <p class="mx-auto mt-6 max-w-xl text-base leading-relaxed text-text-dim" data-reveal>
-        Tell us what your team does by hand, or what system you wish existed.
-        We'll tell you what's worth doing first.
-      </p>
       <div class="mt-10" data-reveal>
-        <Button href={withBase("/contact")} variant="primary">Discuss Your Project</Button>
+        <Button href={withBase("/contact")} variant="primary">Start a Conversation</Button>
       </div>
     </div>
   </div>

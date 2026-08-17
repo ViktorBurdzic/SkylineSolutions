@@ -8,16 +8,46 @@ interface Props {
 const { href, variant = "primary", class: className = "" } = Astro.props;
 
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-md px-5 py-3 text-sm font-medium transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2";
+  "btn group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-md px-5 py-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2";
 
 const variants = {
   primary:
-    "bg-accent-500 text-white hover:bg-accent-400 shadow-[0_0_0_1px_rgba(59,130,246,0.15),0_12px_30px_-10px_rgba(59,130,246,0.55)] hover:shadow-[0_0_0_1px_rgba(59,130,246,0.25),0_16px_36px_-8px_rgba(59,130,246,0.65)] hover:-translate-y-0.5",
-  secondary:
-    "bg-transparent text-text border border-line-strong hover:border-accent-400/60 hover:text-white hover:-translate-y-0.5",
+    "bg-accent-500 text-white shadow-[0_0_0_1px_rgba(59,130,246,0.15),0_12px_30px_-10px_rgba(59,130,246,0.55)] hover:shadow-[0_0_0_1px_rgba(59,130,246,0.25),0_16px_36px_-8px_rgba(59,130,246,0.65)]",
+  secondary: "bg-transparent text-text border border-line-strong hover:border-accent-400/60 hover:text-white",
 };
 ---
 
-<a href={href} class={`${base} ${variants[variant]} ${className}`}>
-  <slot />
+<a href={href} data-magnetic="0.2" class={`${base} ${variants[variant]} ${className}`}>
+  <!-- Sheen wipes across the face on hover. -->
+  <span class="btn__sheen" aria-hidden="true"></span>
+  <span class="btn__label"><slot /></span>
 </a>
+
+<style>
+  .btn {
+    transition: box-shadow 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+  }
+
+  .btn__label {
+    position: relative;
+    z-index: 1;
+  }
+
+  .btn__sheen {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(100deg, transparent 20%, rgba(255, 255, 255, 0.22), transparent 80%);
+    transform: translateX(-110%);
+    transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .btn:hover .btn__sheen {
+    transform: translateX(110%);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn__sheen {
+      display: none;
+    }
+  }
+</style>

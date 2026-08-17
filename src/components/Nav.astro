@@ -4,10 +4,11 @@ import { withBase } from "../utils/url";
 const links = [
   { href: withBase("/#services"), label: "Services" },
   { href: withBase("/#automate"), label: "What We Do" },
-  { href: withBase("/#technology"), label: "Technology" },
+  { href: withBase("/#work"), label: "Work" },
 ];
 ---
 
+<!-- `sticky` is already a positioned element, so the progress bar can anchor to it. -->
 <header class="sticky top-0 z-50 border-b border-line bg-ink-950/80 backdrop-blur-md">
   <div class="container-xl flex h-16 items-center justify-between md:h-20">
     <a href={withBase("/")} class="flex items-center gap-3 shrink-0">
@@ -19,10 +20,7 @@ const links = [
 
     <nav class="hidden lg:flex items-center gap-8" aria-label="Primary">
       {links.map((link) => (
-        <a
-          href={link.href}
-          class="text-sm text-text-dim hover:text-white transition-colors duration-200"
-        >
+        <a href={link.href} class="navlink text-sm text-text-dim transition-colors duration-200 hover:text-white">
           {link.label}
         </a>
       ))}
@@ -31,7 +29,8 @@ const links = [
     <div class="hidden lg:block">
       <a
         href={withBase("/contact")}
-        class="inline-flex items-center justify-center rounded-md bg-accent-500 px-4 py-2.5 text-sm font-medium text-white transition-all duration-200 hover:bg-accent-400 hover:-translate-y-0.5"
+        data-magnetic="0.25"
+        class="inline-flex items-center justify-center rounded-md bg-accent-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-accent-400"
       >
         Discuss Your Project
       </a>
@@ -54,6 +53,14 @@ const links = [
     </button>
   </div>
 
+  <!-- Scroll progress, drawn on the nav's own bottom border. -->
+  <div class="pointer-events-none absolute inset-x-0 bottom-0 h-px overflow-hidden" aria-hidden="true">
+    <span
+      data-progress
+      class="block h-full origin-left scale-x-0 bg-gradient-to-r from-accent-500 to-cyan-400"
+    ></span>
+  </div>
+
   <nav id="mobile-nav" class="hidden lg:hidden border-t border-line bg-ink-950" aria-label="Mobile">
     <div class="container-xl flex flex-col gap-1 py-4">
       {links.map((link) => (
@@ -73,6 +80,35 @@ const links = [
     </div>
   </nav>
 </header>
+
+<style>
+  /* Hairline that wipes out from the centre on hover. */
+  .navlink {
+    position: relative;
+  }
+
+  .navlink::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -0.4rem;
+    height: 1px;
+    background: linear-gradient(to right, var(--color-accent-400), var(--color-cyan-400));
+    transform: scaleX(0);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .navlink:hover::after {
+    transform: scaleX(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .navlink::after {
+      transition: none;
+    }
+  }
+</style>
 
 <script>
   const toggle = document.getElementById("nav-toggle");

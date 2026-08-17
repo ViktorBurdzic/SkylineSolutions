@@ -39,7 +39,6 @@ export const jobs: Job[] = [
       "Enrich it from public sources",
       "Score it against your ideal customer",
       "Route the hot ones to sales",
-      "Start follow-up on the rest",
     ],
   },
   {
@@ -49,7 +48,6 @@ export const jobs: Job[] = [
     steps: [
       "Read the incoming ticket",
       "Retrieve the customer's history",
-      "Search documentation for the answer",
       "Draft a reply in your tone",
       "Hand the tricky ones to a person",
     ],
@@ -61,7 +59,6 @@ export const jobs: Job[] = [
     steps: [
       "Read the incoming invoice",
       "Pull out line items and totals",
-      "Match it to the purchase order",
       "Flag whatever fails to reconcile",
       "Queue the rest for payment",
     ],
@@ -73,7 +70,6 @@ export const jobs: Job[] = [
     steps: [
       "Ingest the document",
       "Find the clauses that matter",
-      "Compare against your standard terms",
       "Highlight every deviation",
       "Summarise the risk for legal",
     ],
@@ -85,7 +81,6 @@ export const jobs: Job[] = [
     steps: [
       "Scan open invoices",
       "Flag the accounts past due",
-      "Weigh payment history and risk",
       "Draft the right next action",
       "Escalate the exceptions to a human",
     ],
@@ -97,7 +92,6 @@ export const jobs: Job[] = [
     mode: "build",
     steps: [
       "Map how your team actually works",
-      "Model the data behind it",
       "Build the screens and workflows",
       "Wire in AI where it saves time",
       "Migrate your data and go live",
@@ -109,7 +103,6 @@ export const jobs: Job[] = [
     mode: "build",
     steps: [
       "Decide what customers can self-serve",
-      "Design the pages and permissions",
       "Build a CMS your team can edit",
       "Connect it to your back office",
       "Ship it and hand over the keys",
@@ -121,7 +114,6 @@ export const jobs: Job[] = [
     mode: "build",
     steps: [
       "Inventory the systems in play",
-      "Agree the single source of truth",
       "Build the APIs between them",
       "Reconcile the data that disagrees",
       "Monitor it once it is live",
@@ -135,7 +127,6 @@ export const jobs: Job[] = [
       "Read the code nobody wants to touch",
       "Document what it really does",
       "Rebuild it on a modern stack",
-      "Run both in parallel to prove it",
       "Retire the old system",
     ],
   },

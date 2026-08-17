@@ -2,7 +2,7 @@
 import "../styles/global.css";
 import Nav from "../components/Nav.astro";
 import Footer from "../components/Footer.astro";
-import { SITE } from "../config/site";
+import { SITE, AUTHOR } from "../config/site";
 import { withBase } from "../utils/url";
 
 interface Props {
@@ -28,6 +28,14 @@ const structuredData = {
   description: SITE.description,
   email: SITE.email,
   areaServed: "Worldwide",
+  // A one-person practice: naming the founder lets search engines tie the
+  // business to a real, verifiable person rather than an anonymous brand.
+  founder: {
+    "@type": "Person",
+    name: AUTHOR.name,
+    jobTitle: AUTHOR.role,
+    sameAs: [AUTHOR.linkedin],
+  },
   knowsAbout: [
     ".NET development",
     "C# development",
@@ -107,6 +115,10 @@ const structuredData = {
           card.style.setProperty("--my", `${event.clientY - rect.top}px`);
         });
       });
+
+      // Word-split headings, counters, magnetic/tilt pointer effects, scroll
+      // velocity, progress bar and the trailing cursor. All opt-in per element.
+      import("../scripts/motion").then(({ initMotion }) => initMotion());
     </script>
   </body>
 </html>

@@ -1,5 +1,5 @@
 ---
-import { SITE } from "../config/site";
+import { SITE, AUTHOR } from "../config/site";
 import { withBase } from "../utils/url";
 
 const year = new Date().getFullYear();
@@ -7,6 +7,7 @@ const year = new Date().getFullYear();
 const links = [
   { href: withBase("/#services"), label: "Services" },
   { href: withBase("/#automate"), label: "What We Do" },
+  { href: withBase("/#work"), label: "Work" },
   { href: withBase("/#technology"), label: "Technology" },
   { href: withBase("/contact"), label: "Contact" },
 ];
@@ -24,7 +25,7 @@ const links = [
         </a>
         <p class="mt-4 text-sm leading-relaxed text-text-dim">
           Software engineering and AI automation for businesses that want their existing systems to do more —
-          without replacing them.
+          without replacing them. Run and delivered by {AUTHOR.name}.
         </p>
       </div>
 
@@ -52,6 +53,16 @@ const links = [
             <li>
               <a href={withBase("/contact")} class="text-sm text-text-dim hover:text-white transition-colors duration-200">
                 Contact form
+              </a>
+            </li>
+            <li>
+              <a
+                href={AUTHOR.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-sm text-text-dim hover:text-white transition-colors duration-200"
+              >
+                LinkedIn
               </a>
             </li>
           </ul>

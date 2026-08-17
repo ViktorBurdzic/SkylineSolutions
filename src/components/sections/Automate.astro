@@ -74,7 +74,7 @@ const groups = (["automate", "build"] as const).map((mode) => ({
       </div>
 
       <p class="auto__note">
-        Illustrations of how we work a job — each one gets shaped around your process.
+        Illustrations — each one gets shaped around your process.
       </p>
     </div>
   </div>
@@ -239,9 +239,10 @@ const groups = (["automate", "build"] as const).map((mode) => ({
     transition: color 0.4s ease, opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
+  /* Dimmed by colour rather than opacity: at 0.5 the text dropped to ~2.2:1
+     against the console, well under AA. The colour alone reads as 5:1. */
   .step[data-state="pending"] {
     color: var(--color-text-faint);
-    opacity: 0.5;
   }
 
   .step[data-state="running"] {
@@ -348,8 +349,8 @@ const groups = (["automate", "build"] as const).map((mode) => ({
 
     // Time each step stays "running", and the pause on a finished workflow
     // before the next one starts. Tune these to change the pace.
-    const STEP_MS = 1500;
-    const HOLD_MS = 3000;
+    const STEP_MS = 1100;
+    const HOLD_MS = 2200;
 
     // Keep the progress rail gliding across a full step instead of snapping
     // early and sitting idle — it would drift out of sync if hardcoded in CSS.

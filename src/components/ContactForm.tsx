@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { WEB3FORMS_ACCESS_KEY } from "../config/site";
+import { SITE, WEB3FORMS_ACCESS_KEY } from "../config/site";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
@@ -14,6 +14,13 @@ const helpOptions = [
 export default function ContactForm() {
   const [status, setStatus] = useState<Status>("idle");
   const [errorMessage, setErrorMessage] = useState("");
+  const [draft, setDraft] = useState("");
+
+  /** Escape hatch when the form service fails: the same message, as an email. */
+  function mailtoFallback() {
+    const subject = encodeURIComponent("Project inquiry — Skyline Solutions");
+    return `mailto:${SITE.email}?subject=${subject}&body=${encodeURIComponent(draft)}`;
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -22,6 +29,20 @@ export default function ContactForm() {
 
     const form = event.currentTarget;
     const formData = new FormData(form);
+
+    // Kept so a failed post can be handed back to the visitor as an email
+    // rather than silently lost.
+    setDraft(
+      [
+        `Name: ${formData.get("name") ?? ""}`,
+        `Company: ${formData.get("company") ?? ""}`,
+        `Email: ${formData.get("email") ?? ""}`,
+        `Needs help with: ${formData.get("help_with") ?? ""}`,
+        "",
+        String(formData.get("description") ?? ""),
+      ].join("\n")
+    );
+
     formData.append("access_key", WEB3FORMS_ACCESS_KEY);
     formData.append("subject", "New project inquiry — Skyline Solutions website");
     formData.append("from_name", "Skyline Solutions Website");
@@ -39,11 +60,11 @@ export default function ContactForm() {
         form.reset();
       } else {
         setStatus("error");
-        setErrorMessage(result.message || "Something went wrong. Please try again or email us directly.");
+        setErrorMessage(result.message || "Something went wrong. Please try again, or email us directly.");
       }
     } catch {
       setStatus("error");
-      setErrorMessage("Something went wrong. Please try again or email us directly.");
+      setErrorMessage("Something went wrong. Please try again, or email us directly.");
     }
   }
 
@@ -55,7 +76,22 @@ export default function ContactForm() {
       >
         <p className="text-lg font-semibold text-white">Thanks — your message is in.</p>
         <p className="mt-2 text-sm text-text-dim">
-          We'll review what you've shared and get back to you shortly.
+          We'll read what you've shared and get back to you shortly.
+        </p>
+        {/*
+          The form service can accept a submission and still fail to deliver it
+          (a suppressed address does exactly that, silently). Showing the inbox
+          here means a visitor always has a second route that doesn't depend on
+          the service working.
+        */}
+        <p className="mt-4 border-t border-line pt-4 text-sm text-text-dim">
+          No reply within a day or two?{" "}
+          <a
+            href={`mailto:${SITE.email}`}
+            className="font-medium text-accent-400 transition-colors duration-200 hover:text-white"
+          >
+            {SITE.email}
+          </a>
         </p>
       </div>
     );
@@ -147,9 +183,20 @@ export default function ContactForm() {
       <input type="checkbox" name="botcheck" className="hidden" style={{ display: "none" }} tabIndex={-1} autoComplete="off" />
 
       {status === "error" && (
-        <p role="alert" className="text-sm text-red-400">
-          {errorMessage}
-        </p>
+        <div role="alert" className="rounded-md border border-red-400/40 bg-red-400/10 p-4">
+          <p className="text-sm text-red-300">{errorMessage}</p>
+          {/*
+            A failed post used to be a dead end — the visitor's message was gone
+            and there was nothing to do about it. This hands them the inbox
+            directly, with what they typed carried over.
+          */}
+          <a
+            href={mailtoFallback()}
+            className="mt-2 inline-block text-sm font-medium text-white underline underline-offset-4 hover:text-accent-400"
+          >
+            Send it as an email instead
+          </a>
+        </div>
       )}
 
       <button
