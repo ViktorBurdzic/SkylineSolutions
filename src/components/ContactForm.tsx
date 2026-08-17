@@ -6,6 +6,7 @@ type Status = "idle" | "submitting" | "success" | "error";
 const helpOptions = [
   "AI Agents & Automation",
   "Custom Software & Integrations",
+  "New CRM / CMS Platform",
   "AI-Powered Modernization",
   "Not sure yet — general inquiry",
 ];

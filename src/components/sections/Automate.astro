@@ -1,25 +1,439 @@
 ---
 import SectionHeading from "../SectionHeading.astro";
-import { automationExamples } from "../../data/automation";
+import { jobs, jobModes, type JobMode } from "../../data/automation";
+
+const groups = (["automate", "build"] as const).map((mode) => ({
+  mode,
+  ...jobModes[mode],
+  items: jobs.map((job, index) => ({ job, index })).filter(({ job }) => job.mode === mode),
+}));
 ---
 
 <section id="automate" class="border-b border-line py-28 md:py-40 scroll-mt-20">
   <div class="container-xl">
-    <SectionHeading eyebrow="What Can We Automate?" title="Examples, not a" accent="finished product list." />
+    <SectionHeading eyebrow="What Can We Take On?" title="Pick a job." accent="Watch it run." />
 
-    <div class="mt-20 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-      {automationExamples.map((item, i) => (
-        <div
-          class="spotlight group relative overflow-hidden rounded-2xl border border-line bg-ink-900/40 p-7 transition-all duration-500 hover:-translate-y-1.5 hover:border-accent-500/40"
-          data-spotlight
-          data-reveal
-          style={`transition-delay: ${(i % 3) * 80}ms`}
-        >
-          <h3 class="text-lg font-semibold tracking-tight text-white">{item.title}</h3>
-          <p class="mt-2.5 text-sm leading-relaxed text-text-dim">{item.description}</p>
-          <span class="hairline-grad absolute inset-x-0 bottom-0 h-px"></span>
+    <div class="auto" data-auto>
+      <!-- Pick a job, from either track -->
+      <div class="tracks">
+        {groups.map((group) => (
+          <div class="jtrack">
+            <p class="jtrack__label">
+              {group.label}
+              <span class="jtrack__hint">{group.hint}</span>
+            </p>
+            <div class="chips">
+              {group.items.map(({ job, index }) => (
+                <button
+                  class="jobchip"
+                  type="button"
+                  aria-pressed={index === 0 ? "true" : "false"}
+                  data-job={index}
+                >
+                  {job.title}
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <!-- Console -->
+      <div class="console" data-reveal>
+        <div class="console__bar">
+          <span class="console__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="console__name" data-agent>{jobs[0].agent}</span>
+          <span class="console__status" data-status>{jobModes[jobs[0].mode].running}</span>
         </div>
-      ))}
+
+        <div class="console__body">
+          {jobs.map((item, i) => (
+            <ol
+              class="steps"
+              data-steps={i}
+              data-agent-name={item.agent}
+              data-running={jobModes[item.mode as JobMode].running}
+              data-done={jobModes[item.mode as JobMode].done}
+              hidden={i !== 0}
+            >
+              {item.steps.map((step) => (
+                <li class="step" data-state="pending">
+                  <span class="step__icon" aria-hidden="true">
+                    <svg class="step__check" viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M3 8.5l3.2 3.2L13 5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                  </span>
+                  <span class="step__text">{step}</span>
+                </li>
+              ))}
+            </ol>
+          ))}
+        </div>
+
+        <div class="console__rail" aria-hidden="true"><span data-rail></span></div>
+      </div>
+
+      <p class="auto__note">
+        Illustrations of how we work a job — each one gets shaped around your process.
+      </p>
     </div>
   </div>
 </section>
+
+<style>
+  .auto {
+    margin-top: 3.5rem;
+  }
+
+  /* ---------- job chips ---------- */
+
+  .tracks {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  @media (min-width: 900px) {
+    .tracks {
+      grid-template-columns: 1fr 1fr;
+      gap: 2.5rem;
+    }
+  }
+
+  .jtrack__label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #fff;
+  }
+
+  .jtrack__hint {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 400;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--color-text-faint);
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .jobchip {
+    border-radius: 999px;
+    border: 1px solid var(--color-line);
+    background: rgba(9, 12, 17, 0.5);
+    padding: 0.55rem 1.05rem;
+    font-size: 0.875rem;
+    color: var(--color-text-dim);
+    cursor: pointer;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.25s ease,
+      background 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .jobchip:hover {
+    transform: translateY(-2px);
+    color: var(--color-text);
+    border-color: var(--color-line-strong);
+  }
+
+  .jobchip[aria-pressed="true"] {
+    border-color: rgba(59, 130, 246, 0.6);
+    background: rgba(59, 130, 246, 0.15);
+    color: #fff;
+    box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.16), 0 12px 30px -16px rgba(59, 130, 246, 0.9);
+  }
+
+  /* ---------- console ---------- */
+
+  .console {
+    position: relative;
+    margin-top: 1.5rem;
+    border-radius: 1.25rem;
+    border: 1px solid var(--color-line-strong);
+    background: linear-gradient(180deg, rgba(16, 20, 27, 0.95), rgba(5, 7, 10, 0.95));
+    overflow: hidden;
+    box-shadow: 0 40px 90px -50px rgba(0, 0, 0, 1);
+  }
+
+  .console__bar {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    border-bottom: 1px solid var(--color-line);
+    background: rgba(255, 255, 255, 0.02);
+    padding: 0.75rem 1.1rem;
+  }
+
+  .console__dots {
+    display: flex;
+    gap: 0.35rem;
+  }
+
+  .console__dots i {
+    width: 9px;
+    height: 9px;
+    border-radius: 999px;
+    background: var(--color-ink-600);
+  }
+
+  .console__name {
+    flex: 1;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-text-dim);
+  }
+
+  .console__status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    border-radius: 999px;
+    border: 1px solid rgba(34, 211, 238, 0.35);
+    background: rgba(34, 211, 238, 0.1);
+    padding: 0.2rem 0.6rem;
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-cyan-400);
+  }
+
+  .console__status::before {
+    content: "";
+    width: 5px;
+    height: 5px;
+    border-radius: 999px;
+    background: currentColor;
+    animation: blip 1.4s ease-in-out infinite;
+  }
+
+  @keyframes blip {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.25; }
+  }
+
+  .console__body {
+    padding: clamp(1.25rem, 3vw, 2rem) clamp(1.1rem, 3vw, 2rem);
+    min-height: 15rem;
+  }
+
+  /* ---------- steps ---------- */
+
+  .steps {
+    display: grid;
+    gap: 0.9rem;
+  }
+
+  .step {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    font-family: var(--font-mono);
+    font-size: clamp(0.8125rem, 1.6vw, 0.9375rem);
+    transition: color 0.4s ease, opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .step[data-state="pending"] {
+    color: var(--color-text-faint);
+    opacity: 0.5;
+  }
+
+  .step[data-state="running"] {
+    color: #fff;
+    transform: translateX(4px);
+  }
+
+  .step[data-state="done"] {
+    color: var(--color-text-dim);
+  }
+
+  .step__icon {
+    position: relative;
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 999px;
+    border: 1px solid var(--color-line-strong);
+    transition: border-color 0.4s ease, background 0.4s ease, color 0.4s ease;
+  }
+
+  /* Spinning arc while a step is in flight. */
+  .step[data-state="running"] .step__icon {
+    border-color: transparent;
+    border-top-color: var(--color-cyan-400);
+    border-right-color: var(--color-cyan-400);
+    animation: spinArc 0.7s linear infinite;
+  }
+
+  @keyframes spinArc {
+    to { transform: rotate(360deg); }
+  }
+
+  .step[data-state="done"] .step__icon {
+    border-color: rgba(59, 130, 246, 0.5);
+    background: rgba(59, 130, 246, 0.18);
+    color: var(--color-accent-400);
+  }
+
+  .step__check {
+    opacity: 0;
+    transform: scale(0.5);
+    transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .step[data-state="done"] .step__check {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .console__rail {
+    height: 2px;
+    background: var(--color-line);
+  }
+
+  .console__rail span {
+    display: block;
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(to right, var(--color-accent-500), var(--color-cyan-400));
+    transition: width 0.5s linear;
+  }
+
+  .auto__note {
+    margin-top: 1.25rem;
+    font-size: 0.8125rem;
+    color: var(--color-text-faint);
+  }
+
+  /* ---------- reduced motion ---------- */
+
+  @media (prefers-reduced-motion: reduce) {
+    .step,
+    .step[data-state="pending"] {
+      opacity: 1;
+      color: var(--color-text-dim);
+      transform: none;
+    }
+    .step__icon {
+      animation: none;
+    }
+    .step__check {
+      opacity: 1;
+      transform: none;
+    }
+    .console__status::before {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>("[data-auto]");
+
+  if (root) {
+    const chips = Array.from(root.querySelectorAll<HTMLButtonElement>("[data-job]"));
+    const lists = Array.from(root.querySelectorAll<HTMLElement>("[data-steps]"));
+    const agentLabel = root.querySelector<HTMLElement>("[data-agent]");
+    const status = root.querySelector<HTMLElement>("[data-status]");
+    const rail = root.querySelector<HTMLElement>("[data-rail]");
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    // Time each step stays "running", and the pause on a finished workflow
+    // before the next one starts. Tune these to change the pace.
+    const STEP_MS = 1500;
+    const HOLD_MS = 3000;
+
+    // Keep the progress rail gliding across a full step instead of snapping
+    // early and sitting idle — it would drift out of sync if hardcoded in CSS.
+    if (rail) rail.style.transitionDuration = `${STEP_MS}ms`;
+
+    let job = 0;
+    let timer = 0;
+    let userPicked = false;
+    let running = false;
+
+    const stepsOf = (index: number) => Array.from(lists[index].querySelectorAll<HTMLElement>(".step"));
+
+    const show = (index: number) => {
+      lists.forEach((list, i) => (list.hidden = i !== index));
+      chips.forEach((chip, i) => chip.setAttribute("aria-pressed", String(i === index)));
+      if (agentLabel) agentLabel.textContent = lists[index].dataset.agentName ?? agentLabel.textContent;
+    };
+
+    const reset = (index: number) => {
+      stepsOf(index).forEach((step) => (step.dataset.state = "pending"));
+      if (rail) rail.style.width = "0%";
+    };
+
+    const play = (index: number) => {
+      clearTimeout(timer);
+      running = true;
+      show(index);
+      reset(index);
+
+      const steps = stepsOf(index);
+      // Build jobs read "building / shipped" rather than "running / done".
+      const list = lists[index];
+      if (status) status.textContent = list.dataset.running ?? "running";
+
+      const advance = (i: number) => {
+        if (i > 0) steps[i - 1].dataset.state = "done";
+
+        if (i === steps.length) {
+          if (status) status.textContent = list.dataset.done ?? "done";
+          if (rail) rail.style.width = "100%";
+          // Move to the next workflow on its own, unless the visitor chose one.
+          timer = window.setTimeout(() => {
+            if (userPicked) play(index);
+            else play((index + 1) % lists.length);
+          }, HOLD_MS);
+          return;
+        }
+
+        steps[i].dataset.state = "running";
+        if (rail) rail.style.width = `${(i / steps.length) * 100}%`;
+        timer = window.setTimeout(() => advance(i + 1), STEP_MS);
+      };
+
+      advance(0);
+    };
+
+    chips.forEach((chip, i) =>
+      chip.addEventListener("click", () => {
+        userPicked = true;
+        job = i;
+        play(i);
+      })
+    );
+
+    if (reduced.matches) {
+      // No choreography: show the first workflow fully completed.
+      show(0);
+      stepsOf(0).forEach((step) => (step.dataset.state = "done"));
+      if (status) status.textContent = lists[0].dataset.done ?? "done";
+      if (rail) rail.style.width = "100%";
+    } else {
+      // Only burn cycles while the section is actually on screen.
+      const io = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting && !running) {
+            play(job);
+          } else if (!entry.isIntersecting) {
+            clearTimeout(timer);
+            running = false;
+          }
+        },
+        { threshold: 0.25 }
+      );
+      io.observe(root);
+    }
+  }
+</script>

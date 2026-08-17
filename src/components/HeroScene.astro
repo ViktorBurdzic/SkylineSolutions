@@ -48,6 +48,7 @@ const steps: Step[] = [
     <div class="aura" data-aura="base" aria-hidden="true"></div>
     <div class="aura" data-aura="core" aria-hidden="true"></div>
     <div class="aura" data-aura="result" aria-hidden="true"></div>
+    <canvas class="webgl" data-webgl aria-hidden="true"></canvas>
     <div class="drift-grid" aria-hidden="true"></div>
 
     <header class="flow__head">
@@ -164,6 +165,20 @@ const steps: Step[] = [
   .flow__sticky[data-tone="base"] .aura[data-aura="base"],
   .flow__sticky[data-tone="core"] .aura[data-aura="core"],
   .flow__sticky[data-tone="result"] .aura[data-aura="result"] {
+    opacity: 1;
+  }
+
+  .webgl {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    /* Fades up once the field has rendered its first frame. */
+    opacity: 0;
+    transition: opacity 1.2s ease;
+  }
+
+  .webgl[data-ready] {
     opacity: 1;
   }
 
@@ -559,6 +574,31 @@ const steps: Step[] = [
   if (flow && cards.length && !reduced.matches) {
     const clamp = (v: number, min = 0, max = 1) => Math.min(max, Math.max(min, v));
 
+    // three.js is ~125KB gzipped, so it is code-split and pulled in only once
+    // the page is idle. The card sequence is fully functional without it.
+    let field: { setProgress: (p: number) => void } | null = null;
+    let lastProgress = 0;
+
+    const canvas = document.querySelector<HTMLCanvasElement>("[data-webgl]");
+    const saveData = (navigator as { connection?: { saveData?: boolean } }).connection?.saveData;
+
+    if (canvas && !saveData) {
+      const load = () =>
+        import("../scripts/flowfield").then(({ initFlowField }) => {
+          const instance = initFlowField(canvas);
+          if (!instance) return;
+          field = instance;
+          field.setProgress(lastProgress);
+          canvas.setAttribute("data-ready", "");
+        });
+
+      if ("requestIdleCallback" in window) {
+        requestIdleCallback(load, { timeout: 2500 });
+      } else {
+        setTimeout(load, 1200);
+      }
+    }
+
     let active = 0;
     let ticking = false;
 
@@ -593,6 +633,10 @@ const steps: Step[] = [
           );
         }
       }
+
+      // Kept so the field can sync immediately if it finishes loading mid-scroll.
+      lastProgress = p;
+      field?.setProgress(p);
 
       // Drift is the progress *within* the current step, driving the parallax.
       cardsEl?.style.setProperty("--drift", String(t - Math.floor(t)));

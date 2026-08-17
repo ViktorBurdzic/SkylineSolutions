@@ -1,26 +1,435 @@
 ---
 import SectionHeading from "../SectionHeading.astro";
-import { services } from "../../data/services";
+import { services, tracks } from "../../data/services";
+
+const groups = (["existing", "new"] as const).map((key) => ({
+  key,
+  ...tracks[key],
+  items: services
+    .map((service, index) => ({ service, index }))
+    .filter(({ service }) => service.track === key),
+}));
 ---
 
 <section id="services" class="border-b border-line py-28 md:py-40 scroll-mt-20">
   <div class="container-xl">
-    <SectionHeading eyebrow="Services" title="Three ways we make your" accent="software work harder." />
+    <SectionHeading eyebrow="Services" title="Where are you" accent="starting from?" />
 
-    <div class="mt-20 grid gap-6 lg:grid-cols-3">
-      {services.map((service, i) => (
-        <article
-          class="spotlight group relative flex flex-col overflow-hidden rounded-2xl border border-line bg-ink-900/40 p-8 transition-all duration-500 hover:-translate-y-1.5 hover:border-accent-500/40"
-          data-spotlight
-          data-reveal
-          style={`transition-delay: ${i * 80}ms`}
-        >
-          <span class="font-mono text-xs tracking-widest text-accent-400">{service.tag}</span>
-          <h3 class="mt-6 text-2xl font-semibold tracking-tight text-white">{service.title}</h3>
-          <p class="mt-3 text-sm leading-relaxed text-text-dim">{service.description}</p>
-          <span class="hairline-grad absolute inset-x-0 bottom-0 h-px"></span>
-        </article>
-      ))}
+    <div class="explorer" data-explorer>
+      <!-- Choose a starting point -->
+      <div class="picker" role="tablist" aria-label="Services">
+        {groups.map((group) => (
+          <div class="track" data-reveal>
+            <p class="track__label">
+              {group.label}
+              <span class="track__hint">{group.hint}</span>
+            </p>
+
+            {group.items.map(({ service, index }) => (
+              <button
+                class="opt"
+                type="button"
+                role="tab"
+                id={`svc-tab-${index}`}
+                aria-controls={`svc-panel-${index}`}
+                aria-selected={index === 0 ? "true" : "false"}
+                tabindex={index === 0 ? 0 : -1}
+                data-opt={index}
+              >
+                <span class="opt__n">{service.tag}</span>
+                <span class="opt__title">{service.title}</span>
+                <svg class="opt__tip" viewBox="0 0 12 12" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.7">
+                  <path d="M4 2.5L7.5 6 4 9.5" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </button>
+            ))}
+          </div>
+        ))}
+      </div>
+
+      <!-- Detail for the chosen one -->
+      <div class="panels" data-reveal>
+        {services.map((service, index) => (
+          <div
+            class="panel"
+            role="tabpanel"
+            id={`svc-panel-${index}`}
+            aria-labelledby={`svc-tab-${index}`}
+            data-panel={index}
+            data-active={index === 0 ? "" : undefined}
+            hidden={index !== 0}
+          >
+            <p class="panel__eyebrow">{service.tag} — {service.title}</p>
+            <h3 class="panel__headline">{service.headline}</h3>
+
+            <!-- The transformation this service delivers -->
+            <div class="shift">
+              <div class="shift__side shift__side--before">
+                <span class="shift__tag">Today</span>
+                <p class="shift__text">{service.before}</p>
+              </div>
+
+              <div class="shift__arrow" aria-hidden="true">
+                <span class="shift__line"></span>
+                <span class="shift__dot"></span>
+              </div>
+
+              <div class="shift__side shift__side--after">
+                <span class="shift__tag">With Skyline</span>
+                <p class="shift__text">{service.after}</p>
+              </div>
+            </div>
+
+            <ul class="panel__points">
+              {service.points.map((point, p) => (
+                <li style={`--i:${p}`}>
+                  <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M3 8.5l3.2 3.2L13 5" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                  {point}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
     </div>
   </div>
 </section>
+
+<style>
+  .explorer {
+    margin-top: 4rem;
+    display: grid;
+    gap: 1.25rem;
+    align-items: start;
+  }
+
+  @media (min-width: 900px) {
+    .explorer {
+      grid-template-columns: 21rem 1fr;
+      gap: 1.75rem;
+    }
+  }
+
+  /* ---------- picker ---------- */
+
+  .picker {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .track__label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    margin-bottom: 0.6rem;
+    padding-left: 0.15rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #fff;
+  }
+
+  .track__hint {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 400;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--color-text-faint);
+  }
+
+  .opt {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    margin-top: 0.4rem;
+    border-radius: 0.75rem;
+    border: 1px solid var(--color-line);
+    background: rgba(9, 12, 17, 0.5);
+    padding: 0.9rem 1rem;
+    text-align: left;
+    color: var(--color-text-dim);
+    cursor: pointer;
+    transition: border-color 0.3s ease, background 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+      color 0.3s ease;
+  }
+
+  .opt:hover {
+    transform: translateX(4px);
+    border-color: var(--color-line-strong);
+    color: var(--color-text);
+  }
+
+  .opt[aria-selected="true"] {
+    border-color: rgba(59, 130, 246, 0.55);
+    background: linear-gradient(100deg, rgba(59, 130, 246, 0.16), rgba(9, 12, 17, 0.5));
+    color: #fff;
+    box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.14), 0 16px 40px -22px rgba(59, 130, 246, 0.9);
+  }
+
+  .opt__n {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.16em;
+    color: var(--color-text-faint);
+    transition: color 0.3s ease;
+  }
+
+  .opt[aria-selected="true"] .opt__n {
+    color: var(--color-accent-400);
+  }
+
+  .opt__title {
+    flex: 1;
+    font-size: 0.9375rem;
+    font-weight: 500;
+  }
+
+  .opt__tip {
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    color: var(--color-accent-400);
+  }
+
+  .opt[aria-selected="true"] .opt__tip {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* ---------- panel ---------- */
+
+  .panels {
+    position: relative;
+    border-radius: 1.25rem;
+    border: 1px solid var(--color-line);
+    background: rgba(9, 12, 17, 0.5);
+    padding: clamp(1.5rem, 4vw, 2.75rem);
+    overflow: hidden;
+  }
+
+  .panels::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(38rem 20rem at 12% 0%, rgba(59, 130, 246, 0.12), transparent 70%);
+    pointer-events: none;
+  }
+
+  .panel {
+    position: relative;
+    animation: panelIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes panelIn {
+    from { opacity: 0; transform: translateY(12px); }
+  }
+
+  .panel__eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-accent-400);
+  }
+
+  .panel__headline {
+    margin-top: 0.9rem;
+    max-width: 30rem;
+    font-size: clamp(1.35rem, 2.6vw, 2rem);
+    font-weight: 600;
+    line-height: 1.18;
+    letter-spacing: -0.025em;
+    color: #fff;
+    text-wrap: balance;
+  }
+
+  /* ---------- before -> after ---------- */
+
+  .shift {
+    margin-top: 2rem;
+    display: grid;
+    gap: 0.75rem;
+    align-items: stretch;
+  }
+
+  @media (min-width: 620px) {
+    .shift {
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+    }
+  }
+
+  .shift__side {
+    border-radius: 0.85rem;
+    border: 1px solid var(--color-line);
+    padding: 1rem 1.1rem;
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .shift__side--after {
+    border-color: rgba(59, 130, 246, 0.45);
+    background: linear-gradient(180deg, rgba(59, 130, 246, 0.14), rgba(255, 255, 255, 0.02));
+    box-shadow: 0 0 40px -18px rgba(59, 130, 246, 0.85);
+  }
+
+  .shift__tag {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-text-faint);
+  }
+
+  .shift__side--after .shift__tag {
+    color: var(--color-cyan-400);
+  }
+
+  .shift__text {
+    margin-top: 0.5rem;
+    font-size: 0.9375rem;
+    line-height: 1.45;
+    color: var(--color-text-dim);
+    text-wrap: balance;
+  }
+
+  .shift__side--after .shift__text {
+    color: #fff;
+    font-weight: 500;
+  }
+
+  .shift__arrow {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2rem;
+    min-width: 3rem;
+  }
+
+  .shift__line {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, var(--color-line-strong), var(--color-accent-500));
+  }
+
+  .shift__dot {
+    position: absolute;
+    left: 0;
+    width: 5px;
+    height: 5px;
+    border-radius: 999px;
+    background: var(--color-cyan-400);
+    box-shadow: 0 0 10px 3px rgba(34, 211, 238, 0.65);
+    animation: shiftTravel 2.2s ease-in-out infinite;
+  }
+
+  @keyframes shiftTravel {
+    0% { left: 0%; opacity: 0; }
+    15% { opacity: 1; }
+    85% { opacity: 1; }
+    100% { left: 100%; opacity: 0; }
+  }
+
+  /* On narrow screens the arrow turns to point downward. */
+  @media (max-width: 619px) {
+    .shift__line {
+      width: 1px;
+      height: 1.75rem;
+      background: linear-gradient(to bottom, var(--color-line-strong), var(--color-accent-500));
+    }
+    .shift__dot {
+      left: 50%;
+      margin-left: -2.5px;
+      animation-name: shiftTravelDown;
+    }
+    @keyframes shiftTravelDown {
+      0% { top: 0%; opacity: 0; }
+      15% { opacity: 1; }
+      85% { opacity: 1; }
+      100% { top: 100%; opacity: 0; }
+    }
+  }
+
+  /* ---------- points ---------- */
+
+  .panel__points {
+    margin-top: 1.85rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    border-top: 1px solid var(--color-line);
+    padding-top: 1.5rem;
+  }
+
+  .panel__points li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--color-text-dim);
+    animation: pointIn 0.45s calc(0.12s + var(--i) * 0.07s) backwards cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .panel__points svg {
+    color: var(--color-accent-400);
+    flex: none;
+  }
+
+  @keyframes pointIn {
+    from { opacity: 0; transform: translateY(8px); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .panel,
+    .panel__points li {
+      animation: none;
+    }
+    .shift__dot {
+      animation: none;
+      opacity: 0;
+    }
+  }
+</style>
+
+<script>
+  const explorer = document.querySelector<HTMLElement>("[data-explorer]");
+
+  if (explorer) {
+    const opts = Array.from(explorer.querySelectorAll<HTMLButtonElement>("[data-opt]"));
+    const panels = Array.from(explorer.querySelectorAll<HTMLElement>("[data-panel]"));
+
+    const select = (index: number, focus = false) => {
+      opts.forEach((opt, i) => {
+        const on = i === index;
+        opt.setAttribute("aria-selected", String(on));
+        opt.tabIndex = on ? 0 : -1;
+        if (on && focus) opt.focus();
+      });
+      panels.forEach((panel, i) => {
+        panel.hidden = i !== index;
+        panel.toggleAttribute("data-active", i === index);
+      });
+    };
+
+    opts.forEach((opt, i) => {
+      opt.addEventListener("click", () => select(i));
+      // Roving tabindex so the whole group is one stop in the tab order.
+      opt.addEventListener("keydown", (event) => {
+        const keys = ["ArrowDown", "ArrowRight", "ArrowUp", "ArrowLeft", "Home", "End"];
+        if (!keys.includes(event.key)) return;
+        event.preventDefault();
+        const last = opts.length - 1;
+        const next =
+          event.key === "Home" ? 0
+          : event.key === "End" ? last
+          : event.key === "ArrowDown" || event.key === "ArrowRight" ? (i === last ? 0 : i + 1)
+          : i === 0 ? last : i - 1;
+        select(next, true);
+      });
+    });
+  }
+</script>

@@ -1,19 +1,135 @@
 ---
 import SectionHeading from "../SectionHeading.astro";
-import Marquee from "../Marquee.astro";
-import { techGroups } from "../../data/tech";
-
-const rowA = techGroups[0].items;
-const rowB = [...techGroups[1].items, ...techGroups[2].items];
+import { techGroups, models } from "../../data/tech";
 ---
 
 <section id="technology" class="border-b border-line py-28 md:py-40 scroll-mt-20">
   <div class="container-xl">
-    <SectionHeading eyebrow="Technology" title="The stack" accent="behind the work." align="center" />
-  </div>
+    <SectionHeading eyebrow="Technology" title="What we" accent="build with." />
 
-  <div class="mt-20 space-y-4">
-    <Marquee items={rowA} duration={26} />
-    <Marquee items={rowB} reverse duration={22} />
+    <div class="grid">
+      {techGroups.map((group, i) => (
+        <div class="box" data-reveal style={`transition-delay: ${i * 70}ms`}>
+          <p class="box__purpose">{group.purpose}</p>
+
+          {group.showModels && (
+            <div class="models">
+              {models.map((model) => (
+                <span class="model" style={`--c: ${model.color}`}>{model.name}</span>
+              ))}
+            </div>
+          )}
+
+          <div class="box__items">
+            {group.items.map((item) => (
+              <span class="tag">{item}</span>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <p class="note" data-reveal>
+      We're not tied to one AI vendor. <strong>You pick the model, and changing it later is a setting.</strong>
+    </p>
   </div>
 </section>
+
+<style>
+  .grid {
+    margin-top: 3.5rem;
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  @media (min-width: 720px) {
+    .grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .box {
+    border-radius: 1.25rem;
+    border: 1px solid var(--color-line);
+    background: rgba(9, 12, 17, 0.5);
+    padding: clamp(1.35rem, 3vw, 1.85rem);
+    transition: border-color 0.35s ease, background 0.35s ease;
+  }
+
+  .box:hover {
+    border-color: var(--color-line-strong);
+    background: rgba(16, 20, 27, 0.7);
+  }
+
+  .box__purpose {
+    font-size: 1.0625rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: #fff;
+  }
+
+  /* ---------- model row ---------- */
+
+  .models {
+    margin-top: 1.15rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    padding-bottom: 1.15rem;
+    border-bottom: 1px solid var(--color-line);
+  }
+
+  .model {
+    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--c) 55%, transparent);
+    background: color-mix(in srgb, var(--c) 15%, transparent);
+    padding: 0.35rem 0.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--c);
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.25s ease;
+  }
+
+  .model:hover {
+    transform: translateY(-3px);
+    background: color-mix(in srgb, var(--c) 26%, transparent);
+  }
+
+  /* ---------- plain tech tags ---------- */
+
+  .box__items {
+    margin-top: 1.15rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .tag {
+    border-radius: 0.45rem;
+    border: 1px solid var(--color-line-strong);
+    background: rgba(255, 255, 255, 0.03);
+    padding: 0.4rem 0.7rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-text-dim);
+    transition: color 0.25s ease, border-color 0.25s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .tag:hover {
+    transform: translateY(-2px);
+    color: var(--color-text);
+    border-color: rgba(59, 130, 246, 0.5);
+  }
+
+  .note {
+    margin-top: 1.75rem;
+    font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
+    color: var(--color-text-dim);
+    text-wrap: balance;
+  }
+
+  .note strong {
+    color: #fff;
+    font-weight: 600;
+  }
+</style>
