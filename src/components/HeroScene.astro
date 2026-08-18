@@ -516,29 +516,58 @@ const steps: Step[] = [
 
   /* ---------- reduced motion / no JS ---------- */
 
+  /*
+   * Without the scroll choreography there is no sequence, so the four steps
+   * become a static diagram: one row of the pipeline, all of it on screen at
+   * once. The transport (segments, counter, scroll hint) is meaningless here
+   * and is dropped rather than frozen at a value nobody can change.
+   */
   @media (prefers-reduced-motion: reduce) {
     .flow { height: auto; }
 
     .flow__sticky {
-      position: static;
+      /*
+       * Deliberately `relative`, not `static`: the aura, canvas and drift grid
+       * are positioned against this box, and a static parent hands them to
+       * `.flow` instead — where nothing clips them, so the grid's -60px bleed
+       * widened the document and put a horizontal scrollbar on the page.
+       */
+      position: relative;
       height: auto;
       padding-block: 6rem;
     }
 
     .cards {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
+      grid-template-areas: none;
+      grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+      place-items: stretch;
+      gap: 1rem;
+      max-width: 68rem;
+      perspective: none;
       transform: none;
     }
 
     .card,
     .card[data-state="future"],
     .card[data-state="past"] {
+      grid-area: auto;
       opacity: 1;
       transform: none;
       filter: none;
       pointer-events: auto;
+    }
+
+    .card {
+      padding: 1.75rem 1.5rem;
+    }
+
+    /* Four titles at the sequence's size would out-shout the h1 above them. */
+    .card__title {
+      font-size: clamp(1.35rem, 1.8vw, 1.75rem);
+    }
+
+    .card__role {
+      font-size: 0.95rem;
     }
 
     .card__glow,
@@ -556,7 +585,57 @@ const steps: Step[] = [
     }
 
     .aura[data-aura="base"] { opacity: 1; }
-    .seg__fill { transform: scaleX(1); }
+
+    .segs,
+    .counter,
+    .hint {
+      display: none;
+    }
+
+    .flow__cta { margin-top: 0; }
+  }
+
+  /*
+   * No JS: same static diagram. The script never runs, so without this the
+   * page would carry 420vh of runway that shows only the first card.
+   */
+  :global(html:not(.js)) .flow {
+    height: auto;
+  }
+
+  :global(html:not(.js)) .flow__sticky {
+    position: relative;
+    height: auto;
+    padding-block: 6rem;
+  }
+
+  :global(html:not(.js)) .cards {
+    grid-template-areas: none;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    place-items: stretch;
+    gap: 1rem;
+    max-width: 68rem;
+    perspective: none;
+  }
+
+  :global(html:not(.js)) .card,
+  :global(html:not(.js)) .card[data-state="future"] {
+    grid-area: auto;
+    opacity: 1;
+    transform: none;
+    filter: none;
+    pointer-events: auto;
+    padding: 1.75rem 1.5rem;
+  }
+
+  :global(html:not(.js)) .card__title {
+    font-size: clamp(1.35rem, 1.8vw, 1.75rem);
+  }
+
+  :global(html:not(.js)) .segs,
+  :global(html:not(.js)) .counter,
+  :global(html:not(.js)) .hint {
+    display: none;
   }
 </style>
 

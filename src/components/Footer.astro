@@ -30,7 +30,7 @@ const links = [
       </div>
 
       <div class="grid grid-cols-2 gap-8 sm:gap-16">
-        <div>
+        <div class="min-w-0">
           <p class="eyebrow mb-4">Site</p>
           <ul class="space-y-2.5">
             {links.map((link) => (
@@ -42,11 +42,17 @@ const links = [
             ))}
           </ul>
         </div>
-        <div>
+        <div class="min-w-0">
           <p class="eyebrow mb-4">Contact</p>
           <ul class="space-y-2.5">
             <li>
-              <a href={`mailto:${SITE.email}`} class="text-sm text-text-dim hover:text-white transition-colors duration-200">
+              {/* The address is one unbreakable word: without `wrap-anywhere`
+                  it sets the column's min-content width and pushes the footer
+                  past the viewport on narrow screens. */}
+              <a
+                href={`mailto:${SITE.email}`}
+                class="text-sm text-text-dim hover:text-white transition-colors duration-200 wrap-anywhere"
+              >
                 {SITE.email}
               </a>
             </li>

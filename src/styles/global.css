@@ -45,6 +45,13 @@
     background: var(--color-ink-950);
     color-scheme: dark;
     scroll-behavior: smooth;
+    /*
+     * Backstop against a stray sideways scrollbar — decorative layers that
+     * bleed past the fold (auras, grids, glows) should never make the page
+     * pannable. `clip` rather than `hidden` on purpose: `hidden` would turn
+     * the root into a scroll container and break the sticky hero.
+     */
+    overflow-x: clip;
   }
 
   body {
