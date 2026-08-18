@@ -15,9 +15,14 @@ interface Props {
 const { title, description = SITE.description, path = "/", noindex = false } = Astro.props;
 
 const pageTitle = title === SITE.name ? title : `${title} | ${SITE.name}`;
-// `path` is root-relative, so it must carry the base path or it would resolve
-// against the bare origin and drop the /SkylineSolutions project-site prefix.
-const canonicalURL = new URL(withBase(path), SITE.url).toString();
+// `path` is root-relative, so it must carry the configured base path. That is
+// empty on the current apex-domain deploy, but keeping it means a move back to
+// a subpath deploy doesn't silently break every canonical URL.
+// Astro's directory build format serves every page at a trailing slash, and
+// that is the form @astrojs/sitemap emits — so the canonical has to match, or
+// each page is advertised under two URLs that search engines count separately.
+const canonicalPath = path.endsWith("/") ? path : `${path}/`;
+const canonicalURL = new URL(withBase(canonicalPath), SITE.url).toString();
 const ogImageURL = new URL(withBase("/images/og-cover.svg"), SITE.url).toString();
 
 const structuredData = {

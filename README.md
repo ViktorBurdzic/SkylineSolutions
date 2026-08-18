@@ -42,9 +42,11 @@ src/
 
 ## Before you launch — configuration checklist
 
-1. **Domain** — `src/config/site.ts` (`SITE.url`) and `astro.config.mjs` (`site` / `base`) currently point at
-   the GitHub Pages project URL. Replace both with your real domain once you own one, and update the
-   `Sitemap:` line in `public/robots.txt` to match.
+1. **Domain** — done: the site is `https://skylinesolutions.dev`, served by Cloudflare from `main`.
+   Three values have to agree, and a mismatch is silent: `SITE.url` in `src/config/site.ts` (canonical,
+   OG and structured-data URLs), `site` in `astro.config.mjs` (sitemap), and the `Sitemap:` line in
+   `public/robots.txt`. Note that Cloudflare serves its own managed robots.txt, so the file in `public/`
+   is only a fallback — check the live one at `/robots.txt` before trusting it.
 2. **Contact email** — replace the placeholder address in `src/config/site.ts` (`SITE.email`).
 3. **Contact form delivery** — the form posts to [Web3Forms](https://web3forms.com) (no backend required).
    Sign up for a free access key and paste it into `WEB3FORMS_ACCESS_KEY` in `src/config/site.ts`.

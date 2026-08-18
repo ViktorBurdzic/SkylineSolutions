@@ -3,7 +3,11 @@
 
 export const SITE = {
   name: "Skyline Solutions",
-  url: "https://viktorburdzic.github.io/SkylineSolutions", // TODO: swap for a custom domain once you own one (also update astro.config.mjs `site`/`base`)
+  // Must stay in sync with `site` in astro.config.mjs. Everything canonical is
+  // derived from this: the canonical link, the OG/Twitter URLs and the
+  // structured-data `url`. Pointing it anywhere else tells search engines the
+  // real page lives elsewhere, which de-indexes this domain.
+  url: "https://skylinesolutions.dev",
   description:
     "Skyline Solutions integrates AI agents, automation, and modern software engineering into the CRM, ERP, and business software companies already run on.",
   email: "skylinesolutionsai@gmail.com",
