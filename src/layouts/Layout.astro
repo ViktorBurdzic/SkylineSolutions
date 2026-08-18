@@ -23,7 +23,10 @@ const pageTitle = title === SITE.name ? title : `${title} | ${SITE.name}`;
 // each page is advertised under two URLs that search engines count separately.
 const canonicalPath = path.endsWith("/") ? path : `${path}/`;
 const canonicalURL = new URL(withBase(canonicalPath), SITE.url).toString();
-const ogImageURL = new URL(withBase("/images/og-cover.svg"), SITE.url).toString();
+// PNG, not the SVG it is generated from: LinkedIn, Facebook and X all refuse
+// to render SVG previews and fall back to a bare text link. Regenerate with
+// scripts/og-image.mjs after editing og-cover.svg.
+const ogImageURL = new URL(withBase("/images/og-cover.png"), SITE.url).toString();
 
 const structuredData = {
   "@context": "https://schema.org",
@@ -76,6 +79,10 @@ const structuredData = {
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:image" content={ogImageURL} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${SITE.name} — AI automation for business software`} />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={pageTitle} />
