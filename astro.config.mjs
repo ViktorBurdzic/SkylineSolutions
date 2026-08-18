@@ -8,7 +8,7 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://skylinesolutions.skylinesolutionsai.workers.dev',
+  site: 'https://skylinesolutions.dev',
   integrations: [react(), sitemap()],
 
   vite: {
