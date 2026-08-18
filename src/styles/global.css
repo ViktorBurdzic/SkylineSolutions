@@ -211,6 +211,23 @@
     transform: none;
   }
 
+  /*
+   * Gradient text is painted by clipping a background to the glyphs, and WebKit
+   * refuses to do that when the descendants are `inline-block` — which is
+   * precisely what the splitter turns every word into. The result on iOS was
+   * fully transparent text: "What we build with." rendered as "What we", and
+   * the same for every other accent, the hero's "with AI." included.
+   *
+   * Keeping these words inline restores the paint. They give up the vertical
+   * rise, because transforms do not apply to non-replaced inline boxes, but the
+   * staggered fade survives and that carries the effect on its own.
+   */
+  .text-gradient .word,
+  .grad .word {
+    display: inline;
+    transform: none;
+  }
+
   /* Magnetic elements lean toward the pointer; the spring is in the easing. */
   [data-magnetic] {
     transform: translate3d(var(--mag-x, 0), var(--mag-y, 0), 0);
