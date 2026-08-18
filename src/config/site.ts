@@ -12,6 +12,17 @@ export const SITE = {
     "Skyline Solutions integrates AI agents, automation, and modern software engineering into the CRM, ERP, and business software companies already run on.",
   email: "skylinesolutionsai@gmail.com",
   locale: "en",
+  /*
+   * Profiles that represent this same business elsewhere. They become the
+   * `sameAs` array in the structured data, which is how a search engine is told
+   * that this site and those profiles are one entity rather than several — the
+   * signal that matters most for a company name as contested as this one.
+   * Only add profiles that are actually controlled and kept current.
+   */
+  profiles: [
+    "https://www.linkedin.com/company/skyline-solutionsai/",
+    "https://github.com/ViktorBurdzic",
+  ],
 };
 
 // The site speaks as "we" (the company). This is the person behind it — used by
@@ -20,7 +31,7 @@ export const SITE = {
 export const AUTHOR = {
   name: "Viktor Burdzic",
   role: "Founder — Senior .NET / C# Engineer",
-  linkedin: "https://www.linkedin.com/in/viktor-burdzic-37092b229/", // TODO: replace with your real profile URL
+  linkedin: "https://www.linkedin.com/in/viktor-burdzic-37092b229/",
 };
 
 // Web3Forms decides the destination inbox from the access key itself, not from

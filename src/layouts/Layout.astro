@@ -28,33 +28,63 @@ const canonicalURL = new URL(withBase(canonicalPath), SITE.url).toString();
 // scripts/og-image.mjs after editing og-cover.svg.
 const ogImageURL = new URL(withBase("/images/og-cover.png"), SITE.url).toString();
 
+/*
+ * Two linked nodes rather than one, in a @graph so they can reference each
+ * other by @id:
+ *
+ * - the business, carrying `sameAs` — the explicit statement that the LinkedIn
+ *   and GitHub profiles are this same entity. "Skyline Solutions" is a name
+ *   several unrelated companies already use, so corroborating profiles are what
+ *   let a search engine tell them apart.
+ * - the site itself, which is what Google reads to decide the site name shown
+ *   above a search result instead of deriving one from the domain.
+ */
+const orgId = `${SITE.url}/#organization`;
+
 const structuredData = {
   "@context": "https://schema.org",
-  "@type": "ProfessionalService",
-  name: SITE.name,
-  url: SITE.url,
-  description: SITE.description,
-  email: SITE.email,
-  areaServed: "Worldwide",
-  // A one-person practice: naming the founder lets search engines tie the
-  // business to a real, verifiable person rather than an anonymous brand.
-  founder: {
-    "@type": "Person",
-    name: AUTHOR.name,
-    jobTitle: AUTHOR.role,
-    sameAs: [AUTHOR.linkedin],
-  },
-  knowsAbout: [
-    ".NET development",
-    "C# development",
-    "CRM development",
-    "AI automation",
-    "AI agents",
-    "Enterprise software integration",
-    "Software modernization",
-    "UX and interface design",
-    "Software testing and QA",
-    "Software project management",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": `${SITE.url}/#website`,
+      url: SITE.url,
+      name: SITE.name,
+      description: SITE.description,
+      publisher: { "@id": orgId },
+      inLanguage: SITE.locale,
+    },
+    {
+      "@type": "ProfessionalService",
+      "@id": orgId,
+      name: SITE.name,
+      url: SITE.url,
+      description: SITE.description,
+      email: SITE.email,
+      logo: new URL(withBase("/images/linkedin-logo.png"), SITE.url).toString(),
+      image: ogImageURL,
+      sameAs: SITE.profiles,
+      areaServed: "Worldwide",
+      // A one-person practice: naming the founder lets search engines tie the
+      // business to a real, verifiable person rather than an anonymous brand.
+      founder: {
+        "@type": "Person",
+        name: AUTHOR.name,
+        jobTitle: AUTHOR.role,
+        sameAs: [AUTHOR.linkedin],
+      },
+      knowsAbout: [
+        ".NET development",
+        "C# development",
+        "CRM development",
+        "AI automation",
+        "AI agents",
+        "Enterprise software integration",
+        "Software modernization",
+        "UX and interface design",
+        "Software testing and QA",
+        "Software project management",
+      ],
+    },
   ],
 };
 ---
